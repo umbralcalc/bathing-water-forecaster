@@ -1,0 +1,8 @@
+# Cached raw API pulls — regenerable, not version-controlled (committed
+# predictions under data/predictions/ ARE kept, per PLAN).
+/data/raw/
+
+# Go build artifacts
+/bin/
+*.test
+*.out

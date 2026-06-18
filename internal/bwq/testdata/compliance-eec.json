@@ -1,0 +1,30 @@
+{ "format" : "linked-data-api", "version" : "0.2", "result" : {"_about" : "https://environment.data.gov.uk/doc/bathing-water-quality/compliance.json?_pageSize=3&bwq_samplingPoint.samplePointNotation=03600", "definition" : "https://environment.data.gov.uk/meta/doc/bathing-water-quality/compliance.json?bwq_samplingPoint.samplePointNotation=03600", "extendedMetadataVersion" : "https://environment.data.gov.uk/doc/bathing-water-quality/compliance.json?_pageSize=3&bwq_samplingPoint.samplePointNotation=03600&_metadata=all", "first" : "https://environment.data.gov.uk/doc/bathing-water-quality/compliance.json?_pageSize=3&_page=0&bwq_samplingPoint.samplePointNotation=03600", "isPartOf" : {"_about" : "https://environment.data.gov.uk/doc/bathing-water-quality/compliance.json?bwq_samplingPoint.samplePointNotation=03600", "definition" : "https://environment.data.gov.uk/meta/doc/bathing-water-quality/compliance.json?bwq_samplingPoint.samplePointNotation=03600", "hasPart" : "https://environment.data.gov.uk/doc/bathing-water-quality/compliance.json?_pageSize=3&bwq_samplingPoint.samplePointNotation=03600", "type" : ["http://purl.org/linked-data/api/vocab#ListEndpoint"]}
+    , "items" : [{"_about" : "http://environment.data.gov.uk/data/bathing-water-quality/compliance/point/03600/year/1988", "bwq_bathingWater" : {"_about" : "http://environment.data.gov.uk/id/bathing-water/ukc2102-03600", "eubwidNotation" : "ukc2102-03600", "name" : {"_value" : "Spittal", "_datatype" : "langString", "_lang" : "en"}
+      }
+      , "bwq_samplingPoint" : {"_about" : "http://location.data.gov.uk/so/ef/SamplingPoint/bwsp.eaew/03600", "easting" : 400800.0, "lat" : 55.756856682381226, "long" : -1.988831300159957, "name" : {"_value" : "Sampling point at Spittal", "_datatype" : "langString", "_lang" : "en"}
+        , "northing" : 651500.0, "samplePointNotation" : "03600"}
+      , "complianceClassification" : {"_about" : "http://environment.data.gov.uk/def/bathing-water-quality/F", "complianceCodeNotation" : "F", "name" : {"_value" : "Fail", "_datatype" : "langString", "_lang" : "en"}
+      }
+      , "label" : [{"_value" : "1988 compliance assessment for Spittal.", "_datatype" : "langString", "_lang" : "en"}
+      ], "sampleYear" : {"_about" : "http://reference.data.gov.uk/id/year/1988", "ordinalYear" : 1988}
+      , "source" : "http://environment.data.gov.uk/sources/bwq/eaew/input/ea_bw_compliance_history_2011_BWQ_BASELINE.csv#line=000002", "type" : ["http://environment.data.gov.uk/def/bathing-water-quality/ComplianceAssessment", "http://purl.org/linked-data/cube#Observation"]}
+    , {"_about" : "http://environment.data.gov.uk/data/bathing-water-quality/compliance/point/03600/year/1989", "bwq_bathingWater" : {"_about" : "http://environment.data.gov.uk/id/bathing-water/ukc2102-03600", "eubwidNotation" : "ukc2102-03600", "name" : {"_value" : "Spittal", "_datatype" : "langString", "_lang" : "en"}
+      }
+      , "bwq_samplingPoint" : {"_about" : "http://location.data.gov.uk/so/ef/SamplingPoint/bwsp.eaew/03600", "easting" : 400800.0, "lat" : 55.756856682381226, "long" : -1.988831300159957, "name" : {"_value" : "Sampling point at Spittal", "_datatype" : "langString", "_lang" : "en"}
+        , "northing" : 651500.0, "samplePointNotation" : "03600"}
+      , "complianceClassification" : {"_about" : "http://environment.data.gov.uk/def/bathing-water-quality/I", "complianceCodeNotation" : "I", "name" : {"_value" : "Minimum", "_datatype" : "langString", "_lang" : "en"}
+      }
+      , "label" : [{"_value" : "1989 compliance assessment for Spittal.", "_datatype" : "langString", "_lang" : "en"}
+      ], "sampleYear" : {"_about" : "http://reference.data.gov.uk/id/year/1989", "ordinalYear" : 1989}
+      , "source" : "http://environment.data.gov.uk/sources/bwq/eaew/input/ea_bw_compliance_history_2011_BWQ_BASELINE.csv#line=000003", "type" : ["http://environment.data.gov.uk/def/bathing-water-quality/ComplianceAssessment", "http://purl.org/linked-data/cube#Observation"]}
+    , {"_about" : "http://environment.data.gov.uk/data/bathing-water-quality/compliance/point/03600/year/1990", "bwq_bathingWater" : {"_about" : "http://environment.data.gov.uk/id/bathing-water/ukc2102-03600", "eubwidNotation" : "ukc2102-03600", "name" : {"_value" : "Spittal", "_datatype" : "langString", "_lang" : "en"}
+      }
+      , "bwq_samplingPoint" : {"_about" : "http://location.data.gov.uk/so/ef/SamplingPoint/bwsp.eaew/03600", "easting" : 400800.0, "lat" : 55.756856682381226, "long" : -1.988831300159957, "name" : {"_value" : "Sampling point at Spittal", "_datatype" : "langString", "_lang" : "en"}
+        , "northing" : 651500.0, "samplePointNotation" : "03600"}
+      , "complianceClassification" : {"_about" : "http://environment.data.gov.uk/def/bathing-water-quality/F", "complianceCodeNotation" : "F", "name" : {"_value" : "Fail", "_datatype" : "langString", "_lang" : "en"}
+      }
+      , "label" : [{"_value" : "1990 compliance assessment for Spittal.", "_datatype" : "langString", "_lang" : "en"}
+      ], "sampleYear" : {"_about" : "http://reference.data.gov.uk/id/year/1990", "ordinalYear" : 1990}
+      , "source" : "http://environment.data.gov.uk/sources/bwq/eaew/input/ea_bw_compliance_history_2011_BWQ_BASELINE.csv#line=000004", "type" : ["http://environment.data.gov.uk/def/bathing-water-quality/ComplianceAssessment", "http://purl.org/linked-data/cube#Observation"]}
+    ], "itemsPerPage" : 3, "next" : "https://environment.data.gov.uk/doc/bathing-water-quality/compliance.json?_pageSize=3&_page=1&bwq_samplingPoint.samplePointNotation=03600", "page" : 0, "startIndex" : 1, "type" : ["http://purl.org/linked-data/api/vocab#Page"]}
+}

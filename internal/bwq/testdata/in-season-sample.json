@@ -1,0 +1,68 @@
+{ "format" : "linked-data-api", "version" : "0.2", "result" : {"_about" : "https://environment.data.gov.uk/doc/bathing-water-quality/in-season/sample.json?_pageSize=5&bwq_samplingPoint.samplePointNotation=03600&_sort=-sampleDateTime", "definition" : "https://environment.data.gov.uk/meta/doc/bathing-water-quality/in-season/sample.json?bwq_samplingPoint.samplePointNotation=03600&_sort=-sampleDateTime", "extendedMetadataVersion" : "https://environment.data.gov.uk/doc/bathing-water-quality/in-season/sample.json?_pageSize=5&bwq_samplingPoint.samplePointNotation=03600&_metadata=all&_sort=-sampleDateTime", "first" : "https://environment.data.gov.uk/doc/bathing-water-quality/in-season/sample.json?_pageSize=5&_page=0&bwq_samplingPoint.samplePointNotation=03600&_sort=-sampleDateTime", "isPartOf" : {"_about" : "https://environment.data.gov.uk/doc/bathing-water-quality/in-season/sample.json?bwq_samplingPoint.samplePointNotation=03600&_sort=-sampleDateTime", "definition" : "https://environment.data.gov.uk/meta/doc/bathing-water-quality/in-season/sample.json?bwq_samplingPoint.samplePointNotation=03600&_sort=-sampleDateTime", "hasPart" : "https://environment.data.gov.uk/doc/bathing-water-quality/in-season/sample.json?_pageSize=5&bwq_samplingPoint.samplePointNotation=03600&_sort=-sampleDateTime", "type" : ["http://purl.org/linked-data/api/vocab#ListEndpoint"]}
+    , "items" : [{"_about" : "http://environment.data.gov.uk/data/bathing-water-quality/in-season/sample/point/03600/date/20260608/time/100700/recordDate/20260608", "bwq_bathingWater" : {"_about" : "http://environment.data.gov.uk/id/bathing-water/ukc2102-03600", "eubwidNotation" : "ukc2102-03600", "name" : {"_value" : "Spittal", "_datatype" : "langString", "_lang" : "en"}
+      }
+      , "bwq_samplingPoint" : {"_about" : "http://location.data.gov.uk/so/ef/SamplingPoint/bwsp.eaew/03600", "name" : {"_value" : "Sampling point at Spittal", "_datatype" : "langString", "_lang" : "en"}
+        , "samplePointNotation" : "03600"}
+      , "dataset" : "http://environment.data.gov.uk/data/bathing-water-quality/eaew/in-season", "discountable" : {"_value" : "false", "_datatype" : "boolean"}
+      , "escherichiaColiCount" : 10, "escherichiaColiQualifier" : {"_about" : "http://environment.data.gov.uk/def/bathing-water-quality/lessThan", "countQualifierNotation" : "<"}
+      , "intestinalEnterococciCount" : 10, "intestinalEnterococciQualifier" : {"_about" : "http://environment.data.gov.uk/def/bathing-water-quality/lessThan", "countQualifierNotation" : "<"}
+      , "label" : [{"_value" : "Spittal sample assessment for 2026-W24", "_datatype" : "langString", "_lang" : "en"}
+      ], "sampleDateTime" : {"_about" : "http://reference.data.gov.uk/id/gregorian-instant/2026-06-08T10:07:00", "inXSDDateTime" : {"_value" : "2026-06-08T10:07:00", "_datatype" : "dateTime"}
+      }
+      , "sampleWeek" : {"_about" : "http://reference.data.gov.uk/id/week/2026-W24", "label" : [{"_value" : "British Week:2026-W24", "_datatype" : "langString", "_lang" : "en"}
+        ]}
+      , "source" : "http://environment.data.gov.uk/sources/bwq/eaew/input/ea_bw_sample_update_20260613_1.csv#row=000098", "type" : ["http://environment.data.gov.uk/def/bathing-water-quality/SampleAssessment", "http://purl.org/linked-data/cube#Observation"]}
+    , {"_about" : "http://environment.data.gov.uk/data/bathing-water-quality/in-season/sample/point/03600/date/20260602/time/100800/recordDate/20260602", "bwq_bathingWater" : {"_about" : "http://environment.data.gov.uk/id/bathing-water/ukc2102-03600", "eubwidNotation" : "ukc2102-03600", "name" : {"_value" : "Spittal", "_datatype" : "langString", "_lang" : "en"}
+      }
+      , "bwq_samplingPoint" : {"_about" : "http://location.data.gov.uk/so/ef/SamplingPoint/bwsp.eaew/03600", "name" : {"_value" : "Sampling point at Spittal", "_datatype" : "langString", "_lang" : "en"}
+        , "samplePointNotation" : "03600"}
+      , "dataset" : "http://environment.data.gov.uk/data/bathing-water-quality/eaew/in-season", "discountable" : {"_value" : "false", "_datatype" : "boolean"}
+      , "escherichiaColiCount" : 890, "escherichiaColiQualifier" : {"_about" : "http://environment.data.gov.uk/def/bathing-water-quality/actual", "countQualifierNotation" : "="}
+      , "intestinalEnterococciCount" : 840, "intestinalEnterococciQualifier" : {"_about" : "http://environment.data.gov.uk/def/bathing-water-quality/actual", "countQualifierNotation" : "="}
+      , "label" : [{"_value" : "Spittal sample assessment for 2026-W23", "_datatype" : "langString", "_lang" : "en"}
+      ], "sampleDateTime" : {"_about" : "http://reference.data.gov.uk/id/gregorian-instant/2026-06-02T10:08:00", "inXSDDateTime" : {"_value" : "2026-06-02T10:08:00", "_datatype" : "dateTime"}
+      }
+      , "sampleWeek" : {"_about" : "http://reference.data.gov.uk/id/week/2026-W23", "label" : [{"_value" : "British Week:2026-W23", "_datatype" : "langString", "_lang" : "en"}
+        ]}
+      , "source" : "http://environment.data.gov.uk/sources/bwq/eaew/input/ea_bw_sample_update_20260607_1.csv#row=000047", "type" : ["http://environment.data.gov.uk/def/bathing-water-quality/SampleAssessment", "http://purl.org/linked-data/cube#Observation"]}
+    , {"_about" : "http://environment.data.gov.uk/data/bathing-water-quality/in-season/sample/point/03600/date/20260528/time/100500/recordDate/20260528", "bwq_bathingWater" : {"_about" : "http://environment.data.gov.uk/id/bathing-water/ukc2102-03600", "eubwidNotation" : "ukc2102-03600", "name" : {"_value" : "Spittal", "_datatype" : "langString", "_lang" : "en"}
+      }
+      , "bwq_samplingPoint" : {"_about" : "http://location.data.gov.uk/so/ef/SamplingPoint/bwsp.eaew/03600", "name" : {"_value" : "Sampling point at Spittal", "_datatype" : "langString", "_lang" : "en"}
+        , "samplePointNotation" : "03600"}
+      , "dataset" : "http://environment.data.gov.uk/data/bathing-water-quality/eaew/in-season", "discountable" : {"_value" : "false", "_datatype" : "boolean"}
+      , "escherichiaColiCount" : 10, "escherichiaColiQualifier" : {"_about" : "http://environment.data.gov.uk/def/bathing-water-quality/lessThan", "countQualifierNotation" : "<"}
+      , "intestinalEnterococciCount" : 10, "intestinalEnterococciQualifier" : {"_about" : "http://environment.data.gov.uk/def/bathing-water-quality/lessThan", "countQualifierNotation" : "<"}
+      , "label" : [{"_value" : "Spittal sample assessment for 2026-W22", "_datatype" : "langString", "_lang" : "en"}
+      ], "sampleDateTime" : {"_about" : "http://reference.data.gov.uk/id/gregorian-instant/2026-05-28T10:05:00", "inXSDDateTime" : {"_value" : "2026-05-28T10:05:00", "_datatype" : "dateTime"}
+      }
+      , "sampleWeek" : {"_about" : "http://reference.data.gov.uk/id/week/2026-W22", "label" : [{"_value" : "British Week:2026-W22", "_datatype" : "langString", "_lang" : "en"}
+        ]}
+      , "source" : "http://environment.data.gov.uk/sources/bwq/eaew/input/ea_bw_sample_update_20260602_1.csv#row=000089", "type" : ["http://environment.data.gov.uk/def/bathing-water-quality/SampleAssessment", "http://purl.org/linked-data/cube#Observation"]}
+    , {"_about" : "http://environment.data.gov.uk/data/bathing-water-quality/in-season/sample/point/03600/date/20260522/time/101500/recordDate/20260522", "bwq_bathingWater" : {"_about" : "http://environment.data.gov.uk/id/bathing-water/ukc2102-03600", "eubwidNotation" : "ukc2102-03600", "name" : {"_value" : "Spittal", "_datatype" : "langString", "_lang" : "en"}
+      }
+      , "bwq_samplingPoint" : {"_about" : "http://location.data.gov.uk/so/ef/SamplingPoint/bwsp.eaew/03600", "name" : {"_value" : "Sampling point at Spittal", "_datatype" : "langString", "_lang" : "en"}
+        , "samplePointNotation" : "03600"}
+      , "dataset" : "http://environment.data.gov.uk/data/bathing-water-quality/eaew/in-season", "discountable" : {"_value" : "false", "_datatype" : "boolean"}
+      , "escherichiaColiCount" : 55, "escherichiaColiQualifier" : {"_about" : "http://environment.data.gov.uk/def/bathing-water-quality/actual", "countQualifierNotation" : "="}
+      , "intestinalEnterococciCount" : 10, "intestinalEnterococciQualifier" : {"_about" : "http://environment.data.gov.uk/def/bathing-water-quality/lessThan", "countQualifierNotation" : "<"}
+      , "label" : [{"_value" : "Spittal sample assessment for 2026-W21", "_datatype" : "langString", "_lang" : "en"}
+      ], "sampleDateTime" : {"_about" : "http://reference.data.gov.uk/id/gregorian-instant/2026-05-22T10:15:00", "inXSDDateTime" : {"_value" : "2026-05-22T10:15:00", "_datatype" : "dateTime"}
+      }
+      , "sampleWeek" : {"_about" : "http://reference.data.gov.uk/id/week/2026-W21", "label" : [{"_value" : "British Week:2026-W21", "_datatype" : "langString", "_lang" : "en"}
+        ]}
+      , "source" : "http://environment.data.gov.uk/sources/bwq/eaew/input/ea_bw_sample_update_20260527_1.csv#row=000054", "type" : ["http://environment.data.gov.uk/def/bathing-water-quality/SampleAssessment", "http://purl.org/linked-data/cube#Observation"]}
+    , {"_about" : "http://environment.data.gov.uk/data/bathing-water-quality/in-season/sample/point/03600/date/20260515/time/100600/recordDate/20260515", "bwq_bathingWater" : {"_about" : "http://environment.data.gov.uk/id/bathing-water/ukc2102-03600", "eubwidNotation" : "ukc2102-03600", "name" : {"_value" : "Spittal", "_datatype" : "langString", "_lang" : "en"}
+      }
+      , "bwq_samplingPoint" : {"_about" : "http://location.data.gov.uk/so/ef/SamplingPoint/bwsp.eaew/03600", "name" : {"_value" : "Sampling point at Spittal", "_datatype" : "langString", "_lang" : "en"}
+        , "samplePointNotation" : "03600"}
+      , "dataset" : "http://environment.data.gov.uk/data/bathing-water-quality/eaew/in-season", "discountable" : {"_value" : "false", "_datatype" : "boolean"}
+      , "escherichiaColiCount" : 10, "escherichiaColiQualifier" : {"_about" : "http://environment.data.gov.uk/def/bathing-water-quality/lessThan", "countQualifierNotation" : "<"}
+      , "intestinalEnterococciCount" : 10, "intestinalEnterococciQualifier" : {"_about" : "http://environment.data.gov.uk/def/bathing-water-quality/lessThan", "countQualifierNotation" : "<"}
+      , "label" : [{"_value" : "Spittal sample assessment for 2026-W20", "_datatype" : "langString", "_lang" : "en"}
+      ], "sampleDateTime" : {"_about" : "http://reference.data.gov.uk/id/gregorian-instant/2026-05-15T10:06:00", "inXSDDateTime" : {"_value" : "2026-05-15T10:06:00", "_datatype" : "dateTime"}
+      }
+      , "sampleWeek" : {"_about" : "http://reference.data.gov.uk/id/week/2026-W20", "label" : [{"_value" : "British Week:2026-W20", "_datatype" : "langString", "_lang" : "en"}
+        ]}
+      , "source" : "http://environment.data.gov.uk/sources/bwq/eaew/input/ea_bw_sample_update_20260520_1.csv#row=000110", "type" : ["http://environment.data.gov.uk/def/bathing-water-quality/SampleAssessment", "http://purl.org/linked-data/cube#Observation"]}
+    ], "itemsPerPage" : 5, "next" : "https://environment.data.gov.uk/doc/bathing-water-quality/in-season/sample.json?_pageSize=5&_page=1&bwq_samplingPoint.samplePointNotation=03600&_sort=-sampleDateTime", "page" : 0, "startIndex" : 1, "type" : ["http://purl.org/linked-data/api/vocab#Page"]}
+}

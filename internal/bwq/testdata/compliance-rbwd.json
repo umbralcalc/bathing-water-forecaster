@@ -1,0 +1,78 @@
+{ "format" : "linked-data-api", "version" : "0.2", "result" : {"_about" : "https://environment.data.gov.uk/doc/bathing-water-quality/compliance-rBWD.json?_pageSize=5&bwq_samplingPoint.samplePointNotation=03600&_sort=-sampleYear.ordinalYear", "definition" : "https://environment.data.gov.uk/meta/doc/bathing-water-quality/compliance-_regime.json?bwq_samplingPoint.samplePointNotation=03600&_sort=-sampleYear.ordinalYear", "extendedMetadataVersion" : "https://environment.data.gov.uk/doc/bathing-water-quality/compliance-rBWD.json?_pageSize=5&bwq_samplingPoint.samplePointNotation=03600&_metadata=all&_sort=-sampleYear.ordinalYear", "first" : "https://environment.data.gov.uk/doc/bathing-water-quality/compliance-rBWD.json?_pageSize=5&_page=0&bwq_samplingPoint.samplePointNotation=03600&_sort=-sampleYear.ordinalYear", "isPartOf" : {"_about" : "https://environment.data.gov.uk/doc/bathing-water-quality/compliance-rBWD.json?bwq_samplingPoint.samplePointNotation=03600&_sort=-sampleYear.ordinalYear", "definition" : "https://environment.data.gov.uk/meta/doc/bathing-water-quality/compliance-_regime.json?bwq_samplingPoint.samplePointNotation=03600&_sort=-sampleYear.ordinalYear", "hasPart" : "https://environment.data.gov.uk/doc/bathing-water-quality/compliance-rBWD.json?_pageSize=5&bwq_samplingPoint.samplePointNotation=03600&_sort=-sampleYear.ordinalYear", "type" : ["http://purl.org/linked-data/api/vocab#ListEndpoint"]}
+    , "items" : [{"_about" : "http://environment.data.gov.uk/data/bathing-water-quality/compliance-rBWD/point/03600/year/2025", "assessmentQualifier" : {"_about" : "http://environment.data.gov.uk/def/bathing-water-quality/actual-assessment", "name" : {"_value" : "actual assessment", "_datatype" : "langString", "_lang" : "en"}
+      }
+      , "assessmentRegime" : {"_about" : "http://environment.data.gov.uk/def/bathing-water-quality/rBWD", "name" : {"_value" : "rBWD", "_datatype" : "langString", "_lang" : "en"}
+      }
+      , "bwq_bathingWater" : {"_about" : "http://environment.data.gov.uk/id/bathing-water/ukc2102-03600", "eubwidNotation" : "ukc2102-03600", "name" : {"_value" : "Spittal", "_datatype" : "langString", "_lang" : "en"}
+      }
+      , "bwq_samplingPoint" : {"_about" : "http://location.data.gov.uk/so/ef/SamplingPoint/bwsp.eaew/03600", "easting" : 400800.0, "lat" : 55.756856682381226, "long" : -1.988831300159957, "name" : {"_value" : "Sampling point at Spittal", "_datatype" : "langString", "_lang" : "en"}
+        , "northing" : 651500.0, "samplePointNotation" : "03600"}
+      , "complianceClassification" : {"_about" : "http://environment.data.gov.uk/def/bwq-cc-2015/2", "complianceCodeNotation" : "2", "name" : {"_value" : "Good", "_datatype" : "langString", "_lang" : "en"}
+      }
+      , "escherichiaColiStats" : "http://environment.data.gov.uk/data/bathing-water-quality/compliance-rBWD/point/03600/year/2025/escherichiaColiStats", "finalSampleDate" : {"_value" : "2025-09-16", "_datatype" : "date"}
+      , "firstSampleDate" : {"_value" : "2022-05-04", "_datatype" : "date"}
+      , "intestinalEnterococciStats" : "http://environment.data.gov.uk/data/bathing-water-quality/compliance-rBWD/point/03600/year/2025/intestinalEnterococciStats", "label" : [{"_value" : "2025 compliance assessment for Spittal", "_datatype" : "langString", "_lang" : "en"}
+      ], "sampleYear" : {"_about" : "http://reference.data.gov.uk/id/year/2025", "ordinalYear" : 2025}
+      , "source" : "http://environment.data.gov.uk/sources/bwq/eaew/input/ea_bw_compliance_2025.csv#row=000002", "type" : ["http://environment.data.gov.uk/def/bathing-water-quality/ComplianceAssessment", "http://purl.org/linked-data/cube#Observation"]}
+    , {"_about" : "http://environment.data.gov.uk/data/bathing-water-quality/compliance-rBWD/point/03600/year/2024", "assessmentQualifier" : {"_about" : "http://environment.data.gov.uk/def/bathing-water-quality/actual-assessment", "name" : {"_value" : "actual assessment", "_datatype" : "langString", "_lang" : "en"}
+      }
+      , "assessmentRegime" : {"_about" : "http://environment.data.gov.uk/def/bathing-water-quality/rBWD", "name" : {"_value" : "rBWD", "_datatype" : "langString", "_lang" : "en"}
+      }
+      , "bwq_bathingWater" : {"_about" : "http://environment.data.gov.uk/id/bathing-water/ukc2102-03600", "eubwidNotation" : "ukc2102-03600", "name" : {"_value" : "Spittal", "_datatype" : "langString", "_lang" : "en"}
+      }
+      , "bwq_samplingPoint" : {"_about" : "http://location.data.gov.uk/so/ef/SamplingPoint/bwsp.eaew/03600", "easting" : 400800.0, "lat" : 55.756856682381226, "long" : -1.988831300159957, "name" : {"_value" : "Sampling point at Spittal", "_datatype" : "langString", "_lang" : "en"}
+        , "northing" : 651500.0, "samplePointNotation" : "03600"}
+      , "complianceClassification" : {"_about" : "http://environment.data.gov.uk/def/bwq-cc-2015/2", "complianceCodeNotation" : "2", "name" : {"_value" : "Good", "_datatype" : "langString", "_lang" : "en"}
+      }
+      , "escherichiaColiStats" : "http://environment.data.gov.uk/data/bathing-water-quality/compliance-rBWD/point/03600/year/2024/escherichiaColiStats", "finalSampleDate" : {"_value" : "2024-09-17", "_datatype" : "date"}
+      , "firstSampleDate" : {"_value" : "2021-05-06", "_datatype" : "date"}
+      , "intestinalEnterococciStats" : "http://environment.data.gov.uk/data/bathing-water-quality/compliance-rBWD/point/03600/year/2024/intestinalEnterococciStats", "label" : [{"_value" : "2024 compliance assessment for Spittal", "_datatype" : "langString", "_lang" : "en"}
+      ], "sampleYear" : {"_about" : "http://reference.data.gov.uk/id/year/2024", "ordinalYear" : 2024}
+      , "source" : "http://environment.data.gov.uk/sources/bwq/eaew/input/ea_bw_compliance_2024.csv#row=000002", "type" : ["http://environment.data.gov.uk/def/bathing-water-quality/ComplianceAssessment", "http://purl.org/linked-data/cube#Observation"]}
+    , {"_about" : "http://environment.data.gov.uk/data/bathing-water-quality/compliance-rBWD/point/03600/year/2023", "assessmentQualifier" : {"_about" : "http://environment.data.gov.uk/def/bathing-water-quality/actual-assessment", "name" : {"_value" : "actual assessment", "_datatype" : "langString", "_lang" : "en"}
+      }
+      , "assessmentRegime" : {"_about" : "http://environment.data.gov.uk/def/bathing-water-quality/rBWD", "name" : {"_value" : "rBWD", "_datatype" : "langString", "_lang" : "en"}
+      }
+      , "bwq_bathingWater" : {"_about" : "http://environment.data.gov.uk/id/bathing-water/ukc2102-03600", "eubwidNotation" : "ukc2102-03600", "name" : {"_value" : "Spittal", "_datatype" : "langString", "_lang" : "en"}
+      }
+      , "bwq_samplingPoint" : {"_about" : "http://location.data.gov.uk/so/ef/SamplingPoint/bwsp.eaew/03600", "easting" : 400800.0, "lat" : 55.756856682381226, "long" : -1.988831300159957, "name" : {"_value" : "Sampling point at Spittal", "_datatype" : "langString", "_lang" : "en"}
+        , "northing" : 651500.0, "samplePointNotation" : "03600"}
+      , "complianceClassification" : {"_about" : "http://environment.data.gov.uk/def/bwq-cc-2015/1", "complianceCodeNotation" : "1", "name" : {"_value" : "Excellent", "_datatype" : "langString", "_lang" : "en"}
+      }
+      , "escherichiaColiStats" : "http://environment.data.gov.uk/data/bathing-water-quality/compliance-rBWD/point/03600/year/2023/escherichiaColiStats", "finalSampleDate" : {"_value" : "2023-09-24", "_datatype" : "date"}
+      , "firstSampleDate" : {"_value" : "2019-05-07", "_datatype" : "date"}
+      , "intestinalEnterococciStats" : "http://environment.data.gov.uk/data/bathing-water-quality/compliance-rBWD/point/03600/year/2023/intestinalEnterococciStats", "label" : [{"_value" : "2023 compliance assessment for Spittal", "_datatype" : "langString", "_lang" : "en"}
+      ], "sampleYear" : {"_about" : "http://reference.data.gov.uk/id/year/2023", "ordinalYear" : 2023}
+      , "source" : "http://environment.data.gov.uk/sources/bwq/eaew/input/ea_bw_compliance_2023.csv#row=000002", "type" : ["http://environment.data.gov.uk/def/bathing-water-quality/ComplianceAssessment", "http://purl.org/linked-data/cube#Observation"]}
+    , {"_about" : "http://environment.data.gov.uk/data/bathing-water-quality/compliance-rBWD/point/03600/year/2022", "assessmentQualifier" : {"_about" : "http://environment.data.gov.uk/def/bathing-water-quality/actual-assessment", "name" : {"_value" : "actual assessment", "_datatype" : "langString", "_lang" : "en"}
+      }
+      , "assessmentRegime" : {"_about" : "http://environment.data.gov.uk/def/bathing-water-quality/rBWD", "name" : {"_value" : "rBWD", "_datatype" : "langString", "_lang" : "en"}
+      }
+      , "bwq_bathingWater" : {"_about" : "http://environment.data.gov.uk/id/bathing-water/ukc2102-03600", "eubwidNotation" : "ukc2102-03600", "name" : {"_value" : "Spittal", "_datatype" : "langString", "_lang" : "en"}
+      }
+      , "bwq_samplingPoint" : {"_about" : "http://location.data.gov.uk/so/ef/SamplingPoint/bwsp.eaew/03600", "easting" : 400800.0, "lat" : 55.756856682381226, "long" : -1.988831300159957, "name" : {"_value" : "Sampling point at Spittal", "_datatype" : "langString", "_lang" : "en"}
+        , "northing" : 651500.0, "samplePointNotation" : "03600"}
+      , "complianceClassification" : {"_about" : "http://environment.data.gov.uk/def/bwq-cc-2015/1", "complianceCodeNotation" : "1", "name" : {"_value" : "Excellent", "_datatype" : "langString", "_lang" : "en"}
+      }
+      , "escherichiaColiStats" : "http://environment.data.gov.uk/data/bathing-water-quality/compliance-rBWD/point/03600/year/2022/escherichiaColiStats", "finalSampleDate" : {"_value" : "2022-09-22", "_datatype" : "date"}
+      , "firstSampleDate" : {"_value" : "2018-05-05", "_datatype" : "date"}
+      , "intestinalEnterococciStats" : "http://environment.data.gov.uk/data/bathing-water-quality/compliance-rBWD/point/03600/year/2022/intestinalEnterococciStats", "label" : [{"_value" : "2022 compliance assessment for Spittal", "_datatype" : "langString", "_lang" : "en"}
+      ], "sampleYear" : {"_about" : "http://reference.data.gov.uk/id/year/2022", "ordinalYear" : 2022}
+      , "source" : "http://environment.data.gov.uk/sources/bwq/eaew/input/ea_bw_compliance_2022.csv#row=000002", "type" : ["http://environment.data.gov.uk/def/bathing-water-quality/ComplianceAssessment", "http://purl.org/linked-data/cube#Observation"]}
+    , {"_about" : "http://environment.data.gov.uk/data/bathing-water-quality/compliance-rBWD/point/03600/year/2021", "assessmentQualifier" : {"_about" : "http://environment.data.gov.uk/def/bathing-water-quality/actual-assessment", "name" : {"_value" : "actual assessment", "_datatype" : "langString", "_lang" : "en"}
+      }
+      , "assessmentRegime" : {"_about" : "http://environment.data.gov.uk/def/bathing-water-quality/rBWD", "name" : {"_value" : "rBWD", "_datatype" : "langString", "_lang" : "en"}
+      }
+      , "bwq_bathingWater" : {"_about" : "http://environment.data.gov.uk/id/bathing-water/ukc2102-03600", "eubwidNotation" : "ukc2102-03600", "name" : {"_value" : "Spittal", "_datatype" : "langString", "_lang" : "en"}
+      }
+      , "bwq_samplingPoint" : {"_about" : "http://location.data.gov.uk/so/ef/SamplingPoint/bwsp.eaew/03600", "easting" : 400800.0, "lat" : 55.756856682381226, "long" : -1.988831300159957, "name" : {"_value" : "Sampling point at Spittal", "_datatype" : "langString", "_lang" : "en"}
+        , "northing" : 651500.0, "samplePointNotation" : "03600"}
+      , "complianceClassification" : {"_about" : "http://environment.data.gov.uk/def/bwq-cc-2015/1", "complianceCodeNotation" : "1", "name" : {"_value" : "Excellent", "_datatype" : "langString", "_lang" : "en"}
+      }
+      , "escherichiaColiStats" : "http://environment.data.gov.uk/data/bathing-water-quality/compliance-rBWD/point/03600/year/2021/escherichiaColiStats", "finalSampleDate" : {"_value" : "2021-09-15", "_datatype" : "date"}
+      , "firstSampleDate" : {"_value" : "2017-05-10", "_datatype" : "date"}
+      , "intestinalEnterococciStats" : "http://environment.data.gov.uk/data/bathing-water-quality/compliance-rBWD/point/03600/year/2021/intestinalEnterococciStats", "label" : [{"_value" : "2021 compliance assessment for Spittal", "_datatype" : "langString", "_lang" : "en"}
+      ], "sampleYear" : {"_about" : "http://reference.data.gov.uk/id/year/2021", "ordinalYear" : 2021}
+      , "source" : "http://environment.data.gov.uk/sources/bwq/eaew/input/ea_bw_compliance_2021.csv#row=000002", "type" : ["http://environment.data.gov.uk/def/bathing-water-quality/ComplianceAssessment", "http://purl.org/linked-data/cube#Observation"]}
+    ], "itemsPerPage" : 5, "next" : "https://environment.data.gov.uk/doc/bathing-water-quality/compliance-rBWD.json?_pageSize=5&_page=1&bwq_samplingPoint.samplePointNotation=03600&_sort=-sampleYear.ordinalYear", "page" : 0, "startIndex" : 1, "type" : ["http://purl.org/linked-data/api/vocab#Page"]}
+}
