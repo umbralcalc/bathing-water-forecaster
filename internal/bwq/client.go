@@ -65,7 +65,33 @@ func (c *Client) InSeasonSamples(ctx context.Context, samplePoint string) ([]Sam
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	return dedupeSamples(out), nil
+}
+
+// dedupeSamples collapses the multiple published revisions of a single physical
+// sample (same point and sampleDateTime) to its latest recordDate, preserving
+// the input's newest-first order. Without this every downstream count and the
+// backtest would double-count republished samples.
+func dedupeSamples(samples []Sample) []Sample {
+	type key struct {
+		point string
+		t     time.Time
+	}
+	latest := make(map[key]int, len(samples))
+	for i, s := range samples {
+		k := key{s.SamplePoint, s.Time}
+		if j, ok := latest[k]; ok && !samples[i].RecordDate.After(samples[j].RecordDate) {
+			continue
+		}
+		latest[k] = i
+	}
+	out := make([]Sample, 0, len(latest))
+	for i, s := range samples {
+		if latest[key{s.SamplePoint, s.Time}] == i {
+			out = append(out, s)
+		}
+	}
+	return out
 }
 
 // Compliance returns the annual classifications for one sampling point under the
@@ -92,6 +118,67 @@ func (c *Client) Compliance(ctx context.Context, regime ComplianceRegime, sample
 		return nil, err
 	}
 	return out, nil
+}
+
+// SamplingPoint identifies a designated bathing-water sampling point and its
+// location — the unit the forecaster iterates over to cover the whole country.
+type SamplingPoint struct {
+	Notation       string // samplePointNotation, e.g. "03600"
+	BathingWaterID string // eubwidNotation
+	Name           string
+	Lat            float64
+	Long           float64
+	Year           int // the rBWD classification year this record came from
+}
+
+// DesignatedSites returns every designated England site classified in the most
+// recent rBWD year, with coordinates — the canonical "all ~400 sites" list. It
+// reads the rBWD compliance cube newest-year first, keeps only the latest year,
+// and dedupes by sampling point. Coordinates come free with each record, so no
+// per-site location lookup is needed downstream.
+func (c *Client) DesignatedSites(ctx context.Context) ([]SamplingPoint, error) {
+	q := url.Values{}
+	q.Set("_sort", "-sampleYear.ordinalYear")
+
+	var sites []SamplingPoint
+	seen := make(map[string]bool)
+	latestYear := 0
+	stop := false
+
+	err := c.paginate(ctx, pathComplianceRBWD, q, func(item json.RawMessage) error {
+		if stop {
+			return nil
+		}
+		var r rawCompliance
+		if err := json.Unmarshal(item, &r); err != nil {
+			return err
+		}
+		cm := r.toCompliance(RegimeRBWD)
+		if latestYear == 0 {
+			latestYear = cm.Year
+		}
+		if cm.Year < latestYear {
+			stop = true // sorted desc by year: nothing newer remains
+			return nil
+		}
+		if cm.SamplePoint == "" || seen[cm.SamplePoint] {
+			return nil
+		}
+		seen[cm.SamplePoint] = true
+		sites = append(sites, SamplingPoint{
+			Notation:       cm.SamplePoint,
+			BathingWaterID: cm.BathingWaterID,
+			Name:           cm.BathingWaterName,
+			Lat:            cm.Lat,
+			Long:           cm.Long,
+			Year:           cm.Year,
+		})
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return sites, nil
 }
 
 // paginate walks _page=0,1,... at maxPageSize, invoking fn for each item, until a

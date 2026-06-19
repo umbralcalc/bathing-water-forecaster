@@ -58,6 +58,14 @@ most-recent samples: E. coli `<`×180, `=`×119, `>`×1; enterococci `<`×193,
 Treating these as point values is not an option — the censored likelihood is
 load-bearing (see PLAN "Validation & honesty rules" and `cmd/censoring-ablation`).
 
+**Republished revisions — must dedupe (verified).** The same physical sample is
+published multiple times under different `recordDate` values as the lab result is
+confirmed/corrected — the item URI ends `.../date/20190614/time/101000/recordDate/
+20210412`. Point 03600 returns 834 records for 785 distinct samples (4 revisions
+of the 2019-06-14 sample alone). The client dedupes by (samplePoint,
+sampleDateTime) keeping the latest `recordDate`; skipping this double-counts every
+downstream statistic and the backtest.
+
 **History depth — DEEP (verified, corrects an earlier caveat).** Established
 sites carry the full record back to **1988** — e.g. points 03600/04200/04800/
 10500/20100/30100/03700 each return **650–834** in-season samples spanning
@@ -121,15 +129,59 @@ prediction endpoint path, site coverage, and cadence (PLAN gating check #5).
 
 ---
 
-## 3. Covariates — EA Flood-Monitoring + Hydrology + Rainfall ⏳
+## 3. Covariates — EA Hydrology + Flood-Monitoring ✅
 
-Same platform, same OGL. ~15-minute rainfall and river-level/flow readings from
-~8,000 stations. Linked to each bathing water via its published **zone of
-influence** and profile outfall features (ESO/SWO/TSO). ⏳ Endpoints and the
-catchment linkage are PLAN gating check #2.
+Same platform, same OGL. Rainfall (and river flow/level) gauges, queried
+spatially and read as dated series. Two sibling APIs with a latency/history
+trade-off — `internal/hydro` wraps the Hydrology one; the Flood-Monitoring one is
+a later live-latency addition behind the same types.
 
-- Flood-Monitoring: `https://environment.data.gov.uk/flood-monitoring/...`
-- Hydrology: `https://environment.data.gov.uk/hydrology/...`
+**Hydrology API — long records (used for backtest + association)** ✅
+`https://environment.data.gov.uk/hydrology`
+
+- Spatial station search: `GET /id/stations?observedProperty=rainfall&lat=&long=&dist=`
+  (dist in km). Items carry `notation`/`stationGuid`, `lat`/`long`, and `measures[]`.
+- Each measure id encodes period: `…-rainfall-t-86400-mm-qualified` (daily total)
+  and `…-rainfall-t-900-mm-qualified` (15-minute). `period` is 86400 / 900 seconds.
+- Readings: `GET /id/measures/{measureID}/readings?mineq-date=YYYY-MM-DD&max-date=
+  YYYY-MM-DD&_limit=N`. Items have `date` (daily) or `dateTime` (sub-daily),
+  `value`, `quality` ("Unchecked"/"Good"/…), and **string-typed `invalid`/`missing`
+  flags ("0"/"1")** — decoded to a validity bool. Berwick gauge: continuous daily
+  back to at least 2019.
+
+**Flood-Monitoring API — live, ~28-day window** (not yet wired)
+`https://environment.data.gov.uk/flood-monitoring`. Same spatial form
+(`/id/stations?parameter=rainfall&lat=&long=&dist=`), 15-min readings, but only a
+rolling recent window — right for in-season live forecasting, wrong for history.
+
+**Linkage & association — verified (PLAN check #2).** `internal/catchment` links a
+site (coordinates from the compliance feed) to its nearest daily-rainfall gauge by
+haversine distance and sums antecedent rainfall over a day-window before each
+sample. `cmd/link-catchment` runs the rain→count sanity check. Across 12 sites
+(2-day window, single nearest gauge — the crudest possible linkage), the
+association is **present where expected and flat where expected**:
+
+| Site | Pearson r(rain, log10 E.coli) | wet≥5mm vs dry elevated rate |
+|---|---|---|
+| Seaton Sluice | +0.38 | 12% vs 1% |
+| Blyth South Beach | +0.38 | 5% vs 1% |
+| Whitley Bay | +0.38 | 4% vs 1% |
+| Bamburgh Castle | +0.39 | 2% vs 0% |
+| Spittal (Tweed estuary) | +0.13 | 12% vs 9% |
+| Great Yarmouth | +0.14 | 0% vs 1% |
+| Amble Links | +0.02 | 2% vs 3% |
+
+The causal backbone is real (wet-day exceedance up to ~12× dry-day at urban
+Northumberland beaches) but **site-dependent** — estuary/large-catchment and very-
+clean sites show no nearest-gauge signal, motivating the PLAN's zone-of-influence
+linkage, rain-lag selection, and hierarchical pooling rather than a universal rain
+rule. Note also that at clean sites most counts are left-censored (`<10`), so the
+uncensored-only Pearson is thin there — the censored model (`internal/exceedance`)
+is what recovers signal those rows hold.
+
+⏳ Still to do for the fuller linkage: the published **zone of influence** spatial
+entity and profile storm-overflow/outfall features (ESO/SWO/TSO), and river
+flow/level gauges for river-mouth sites.
 
 ---
 

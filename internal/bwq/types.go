@@ -57,6 +57,7 @@ type Sample struct {
 	BathingWaterName string    // e.g. "Spittal"
 	SamplePoint      string    // samplePointNotation, e.g. "03600" — the join key
 	Time             time.Time // sampleDateTime
+	RecordDate       time.Time // publication revision; latest wins on dedup
 	Week             string    // sampleWeek label, e.g. "2025-W35"
 	EColi            Count     // Escherichia coli
 	Enterococci      Count     // intestinal enterococci

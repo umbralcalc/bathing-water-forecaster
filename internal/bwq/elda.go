@@ -93,6 +93,7 @@ func (f *eldaFloat) UnmarshalJSON(b []byte) error {
 
 // rawSample mirrors the in-season sample item fields this package consumes.
 type rawSample struct {
+	About        eldaString `json:"_about"`
 	BathingWater struct {
 		About          eldaString `json:"_about"`
 		EUBWIDNotation eldaString `json:"eubwidNotation"`
@@ -139,6 +140,7 @@ func (r rawSample) toSample() Sample {
 		BathingWaterName: string(r.BathingWater.Name),
 		SamplePoint:      string(r.SamplingPoint.Notation),
 		Time:             t,
+		RecordDate:       recordDateFromAbout(string(r.About)),
 		Week:             weekFromLabel(string(r.SampleWeek.Label)),
 		EColi: Count{
 			Value:     r.EColiCount.Value,
@@ -160,6 +162,41 @@ func parseSampleTime(s string) (time.Time, error) {
 		return time.Time{}, nil
 	}
 	return time.Parse("2006-01-02T15:04:05", s)
+}
+
+// recordDateFromAbout extracts the publication revision date from an item URI of
+// the form ".../recordDate/20210412". A sample is republished under several
+// recordDates as the lab result is confirmed/corrected; the latest is canonical.
+func recordDateFromAbout(about string) time.Time {
+	const marker = "/recordDate/"
+	i := indexOf(about, marker)
+	if i < 0 {
+		return time.Time{}
+	}
+	s := about[i+len(marker):]
+	if j := indexByte(s, '/'); j >= 0 {
+		s = s[:j]
+	}
+	t, _ := time.Parse("20060102", s)
+	return t
+}
+
+func indexOf(s, sub string) int {
+	for i := 0; i+len(sub) <= len(s); i++ {
+		if s[i:i+len(sub)] == sub {
+			return i
+		}
+	}
+	return -1
+}
+
+func indexByte(s string, b byte) int {
+	for i := 0; i < len(s); i++ {
+		if s[i] == b {
+			return i
+		}
+	}
+	return -1
 }
 
 // weekFromLabel reduces "British Week:2025-W35" to "2025-W35".

@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 )
 
 func loadItems(t *testing.T, name string) []byte {
@@ -102,6 +103,32 @@ func TestParseComplianceEEC(t *testing.T) {
 	c := r.toCompliance(RegimeEEC)
 	if c.Year < 1988 || c.Year > 2014 {
 		t.Errorf("EEC year expected in 1988..2014, got %d", c.Year)
+	}
+}
+
+func TestDedupeSamples(t *testing.T) {
+	mk := func(point, day string, rec string, ec float64) Sample {
+		tt, _ := time.Parse("2006-01-02", day)
+		rd, _ := time.Parse("2006-01-02", rec)
+		return Sample{SamplePoint: point, Time: tt, RecordDate: rd, EColi: Count{Value: ec, Present: true}}
+	}
+	in := []Sample{
+		mk("03600", "2019-06-14", "2021-04-12", 8500), // latest revision — should win
+		mk("03600", "2019-06-14", "2019-06-14", 100),
+		mk("03600", "2019-06-14", "2019-09-10", 200),
+		mk("03600", "2019-06-07", "2019-06-07", 50), // distinct sample
+		mk("04000", "2019-06-14", "2019-06-14", 70), // distinct point
+	}
+	out := dedupeSamples(in)
+	if len(out) != 3 {
+		t.Fatalf("expected 3 distinct samples, got %d", len(out))
+	}
+	for _, s := range out {
+		if s.SamplePoint == "03600" && s.Time.Format("2006-01-02") == "2019-06-14" {
+			if s.EColi.Value != 8500 {
+				t.Errorf("dedup kept wrong revision: E.coli=%v, want 8500 (latest recordDate)", s.EColi.Value)
+			}
+		}
 	}
 }
 
