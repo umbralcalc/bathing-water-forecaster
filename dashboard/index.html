@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="A calibrated bathing-water pollution-exceedance forecaster — interactive dashboard." />
+  <title>Bathing-water exceedance forecaster</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Open+Sans:wght@300;400;600&display=swap');
+
+    :root {
+      --blue: #3c78d8;
+      --magenta: #b0447a;
+      --ink: #1a1a1a;
+      --slate: #2c3e50;
+      --body: #333;
+      --line: #e0e0e0;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Open Sans', sans-serif;
+      line-height: 1.6; color: var(--body); background: #fafafa;
+    }
+    .container {
+      max-width: 820px; margin: 0 auto; padding: 2rem; background: #fff; min-height: 100vh;
+    }
+    nav { margin-bottom: 2.5rem; padding-bottom: 1.25rem; border-bottom: 2px solid var(--line); }
+    nav a {
+      color: var(--slate); text-decoration: none; font-weight: 600;
+      margin-right: 2rem; font-size: 1.1rem; transition: color .3s;
+    }
+    nav a:hover { color: var(--magenta); }
+
+    h1, h2, h3 { font-family: 'Merriweather', serif; color: var(--ink); line-height: 1.3; }
+    h1 { font-size: 2rem; margin-bottom: .4rem; border-bottom: 3px solid var(--slate); padding-bottom: .3rem; }
+    .subtitle { color: #777; font-size: 1.05rem; margin-bottom: 1.5rem; }
+    h2 {
+      font-size: 1.5rem; color: var(--slate); margin-top: 2.25rem; margin-bottom: .75rem;
+      border-bottom: 2px solid var(--blue); padding-bottom: .3rem;
+    }
+    p { margin-bottom: 1rem; line-height: 1.7; }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .muted { color: #777; font-size: .9rem; }
+
+    /* Controls */
+    .controls {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem 2rem;
+      background: #f7f9fc; border: 1px solid var(--line); border-radius: 0; padding: 1.25rem; margin: 1.25rem 0;
+    }
+    .control label { display: block; font-weight: 600; color: var(--slate); margin-bottom: .35rem; font-size: .95rem; }
+    .control .val { color: var(--blue); font-weight: 600; }
+    input[type=range] { width: 100%; accent-color: var(--blue); }
+
+    /* Map */
+    .maprow { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+    svg { display: block; width: 100%; height: auto; }
+    .legend { display: flex; align-items: center; gap: .5rem; font-size: .85rem; color: #555; margin-top: .25rem; }
+    .legend .bar { height: 12px; width: 160px; background: linear-gradient(90deg, var(--blue), #9c6fb0, var(--magenta)); }
+
+    .dot { cursor: pointer; transition: stroke-width .1s; }
+    .dot:hover { stroke: var(--ink); stroke-width: 1.5; }
+    .dot.sel { stroke: var(--ink); stroke-width: 2; }
+
+    /* Site panel */
+    .panel { border: 1px solid var(--line); padding: 1.25rem 1.5rem; margin-top: 1rem; }
+    .panel .head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: .5rem; }
+    .panel h3 { font-size: 1.3rem; color: var(--slate); }
+    .readout { text-align: right; }
+    .readout .big { font-family: 'Merriweather', serif; font-size: 2.4rem; font-weight: 700; line-height: 1; }
+    .readout .lbl { font-size: .8rem; color: #777; }
+
+    /* Attribution bars */
+    .attrib { margin: 1rem 0 .25rem; }
+    .attrib .row { display: grid; grid-template-columns: 80px 1fr 70px; align-items: center; gap: .6rem; margin-bottom: .4rem; font-size: .9rem; }
+    .attrib .name { color: var(--slate); font-weight: 600; }
+    .attrib .track { background: #eef1f5; height: 16px; position: relative; }
+    .attrib .fill { position: absolute; top: 0; height: 100%; }
+    .attrib .pct { text-align: right; font-variant-numeric: tabular-nums; color: #555; }
+
+    .footnote { margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--line); color: #777; font-size: .85rem; }
+    table.mini { border-collapse: collapse; font-size: .85rem; margin: .5rem 0 1rem; }
+    table.mini td, table.mini th { padding: .2rem .8rem .2rem 0; text-align: left; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav>
+      <a href="https://umbralcalc.github.io/">Home</a>
+      <a href="https://umbralcalc.github.io/about.html">About</a>
+      <a href="https://github.com/umbralcalc">Follow</a>
+    </nav>
+
+    <h1>Is it safe to swim?</h1>
+    <div class="subtitle">A calibrated exceedance forecaster for England's designated bathing waters</div>
+
+    <p>
+      Each designated bathing water is sampled for <em>E. coli</em> roughly weekly in
+      season. This dashboard ships the fitted model to your browser: drag the
+      <strong style="color:var(--blue)">antecedent-rainfall</strong> and
+      <strong style="color:var(--magenta)">season</strong> sliders and watch the
+      probability that the next sample exceeds the threshold move — for every site at
+      once on the map, and broken down into its causes for the site you pick.
+    </p>
+
+    <h2>The coastline right now</h2>
+    <div class="controls">
+      <div class="control">
+        <label>Antecedent rainfall <span class="val" id="rainVal">8 mm</span></label>
+        <input type="range" id="rain" min="0" max="50" step="0.5" value="8" />
+        <div class="muted">2-day rain total over the site's catchment gauge</div>
+      </div>
+      <div class="control">
+        <label>Time of season <span class="val" id="seasonVal">mid-July</span></label>
+        <input type="range" id="season" min="121" max="273" step="1" value="196" />
+        <div class="muted">May → September bathing season</div>
+      </div>
+    </div>
+
+    <div class="maprow">
+      <svg id="map" viewBox="0 0 600 620" role="img" aria-label="Map of bathing waters coloured by exceedance probability"></svg>
+      <div class="legend">
+        <span>lower risk</span><span class="bar"></span><span>higher risk</span>
+        <span style="margin-left:auto" id="mapNote" class="muted"></span>
+      </div>
+    </div>
+
+    <h2>Why — for one site</h2>
+    <p class="muted" style="margin-bottom:.5rem">Click any point on the map. The forecast below decomposes exactly into a baseline level plus the push from recent rain and from season.</p>
+
+    <div class="panel" id="panel">
+      <div class="head">
+        <div>
+          <h3 id="sName">—</h3>
+          <div class="muted" id="sMeta">—</div>
+        </div>
+        <div class="readout">
+          <div class="big" id="sP" style="color:var(--magenta)">—</div>
+          <div class="lbl">P(E. coli &gt; <span id="thr">500</span>)</div>
+        </div>
+      </div>
+
+      <div class="attrib" id="attrib"></div>
+
+      <svg id="curve" viewBox="0 0 600 200" role="img" aria-label="Exceedance probability versus rainfall"></svg>
+      <div class="muted">
+        Curve: P(exceed) vs antecedent rainfall at the chosen season. Ticks are this
+        site's recent resolved samples —
+        <span style="color:var(--magenta)">▲ exceeded</span>,
+        <span style="color:var(--blue)">▼ within limit</span>.
+      </div>
+    </div>
+
+    <h2>How to read this honestly</h2>
+    <p>
+      The model is a censored log-normal on the lab count, driven by antecedent
+      rainfall and a seasonal term. Exceedances are <em>rare</em> (~2–3% of samples)
+      and the truth is observed only weekly, so the forecast's value is
+      <strong>calibration</strong> — a probability you can trust — and
+      <strong>coverage</strong> of every designated site, not a large accuracy edge.
+      It is a methodological exercise, <strong>not</strong> official swimming advice.
+    </p>
+
+    <div class="footnote">
+      Contains public sector information from the Environment Agency (Bathing Water
+      Quality and Hydrology APIs) licensed under the Open Government Licence v3.0.
+      Not affiliated with or endorsed by the Environment Agency, and not an official
+      source of advice on bathing-water safety — for that, consult the EA's
+      <a href="https://environment.data.gov.uk/bwq/profiles/">Swimfo</a> service.
+      <span id="genNote"></span>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script>
+  (function () {
+    const DATA = window.FORECAST_DATA;
+    if (!DATA) { document.getElementById('sName').textContent = 'data.js not found'; return; }
+    const THR = DATA.threshold, LOGTHR = Math.log(THR);
+    document.getElementById('thr').textContent = THR;
+    document.getElementById('genNote').textContent = ' Model fit ' + DATA.generated + '.';
+
+    // --- maths ---
+    function erf(x) {
+      const t = 1 / (1 + 0.3275911 * Math.abs(x));
+      const y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x);
+      return x >= 0 ? y : -y;
+    }
+    const SQRT2 = Math.SQRT2;
+    function ncdf(x) { return 0.5 * (1 + erf(x / SQRT2)); }
+    function seasonTerms(doy) { const a = 2 * Math.PI * doy / 365.25; return [Math.sin(a), Math.cos(a)]; }
+    function mu(s, rain, doy) { const [si, co] = seasonTerms(doy); return s.beta[0] + s.beta[1] * rain + s.beta[2] * si + s.beta[3] * co; }
+    function pExceed(s, rain, doy) { return ncdf((mu(s, rain, doy) - LOGTHR) / s.sigma); }
+
+    // colour ramp blue -> mid -> magenta, emphasising the low range where most sites live
+    function lerp(a, b, t) { return a + (b - a) * t; }
+    function hex(c) { return c.map(v => Math.round(v).toString(16).padStart(2, '0')).join(''); }
+    const C_BLUE = '#3c78d8', C_MAG = '#b0447a';
+    const BLUE = [60, 120, 216], MID = [156, 111, 176], MAG = [176, 68, 122];
+    function colour(p) {
+      let t = Math.min(1, p / 0.25); // saturate at 25%
+      let c = t < 0.5 ? [lerp(BLUE[0], MID[0], t*2), lerp(BLUE[1], MID[1], t*2), lerp(BLUE[2], MID[2], t*2)]
+                      : [lerp(MID[0], MAG[0], (t-0.5)*2), lerp(MID[1], MAG[1], (t-0.5)*2), lerp(MID[2], MAG[2], (t-0.5)*2)];
+      return '#' + hex(c);
+    }
+
+    // --- map projection ---
+    const sites = DATA.sites.filter(s => s.lat && s.long);
+    const lats = sites.map(s => s.lat), lons = sites.map(s => s.long);
+    const latMin = Math.min(...lats) - 0.3, latMax = Math.max(...lats) + 0.3;
+    const lonMin = Math.min(...lons) - 0.3, lonMax = Math.max(...lons) + 0.3;
+    const cosLat = Math.cos((latMin + latMax) / 2 * Math.PI / 180);
+    const W = 600, PAD = 20;
+    const spanLon = (lonMax - lonMin) * cosLat, spanLat = (latMax - latMin);
+    const H = Math.round((W - 2 * PAD) * spanLat / spanLon) + 2 * PAD;
+    const mapSvg = document.getElementById('map');
+    mapSvg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    function px(s) { return PAD + (s.long - lonMin) * cosLat / spanLon * (W - 2 * PAD); }
+    function py(s) { return PAD + (latMax - s.lat) / spanLat * (H - 2 * PAD); }
+
+    let selected = sites.find(s => s.point === '04700') || sites[0];
+
+    function rain() { return parseFloat(document.getElementById('rain').value); }
+    function season() { return parseInt(document.getElementById('season').value, 10); }
+
+    function drawMap() {
+      const r = rain(), d = season();
+      let html = '';
+      // ordered so higher-risk dots draw on top
+      const ordered = sites.map(s => ({ s, p: pExceed(s, r, d) })).sort((a, b) => a.p - b.p);
+      for (const { s, p } of ordered) {
+        const sel = s.point === selected.point ? ' sel' : '';
+        html += `<circle class="dot${sel}" data-pt="${s.point}" cx="${px(s).toFixed(1)}" cy="${py(s).toFixed(1)}" r="${s.point===selected.point?6:4.5}" fill="${colour(p)}" stroke="#fff" stroke-width="0.8"><title>${s.name}: ${(100*p).toFixed(1)}%</title></circle>`;
+      }
+      mapSvg.innerHTML = html;
+      mapSvg.querySelectorAll('.dot').forEach(el => el.addEventListener('click', () => {
+        selected = sites.find(s => s.point === el.getAttribute('data-pt'));
+        drawAll();
+      }));
+      const hi = ordered[ordered.length - 1];
+      document.getElementById('mapNote').textContent =
+        `${sites.length} sites · highest now: ${hi.s.name} (${(100*hi.p).toFixed(0)}%)`;
+    }
+
+    function bar(name, value, base, colourCss) {
+      // value is a signed probability contribution; scale bars against the total span
+      return { name, value, base, colourCss };
+    }
+    function drawAttrib() {
+      const s = selected, r = rain(), d = season();
+      const [si, co] = seasonTerms(d);
+      const pBase = ncdf((s.beta[0] - LOGTHR) / s.sigma);                       // rain 0, avg season
+      const pRain = ncdf((s.beta[0] + s.beta[1]*r - LOGTHR) / s.sigma);          // + rain
+      const pFull = pExceed(s, r, d);                                           // + season
+      const rainPush = pRain - pBase, seasonPush = pFull - pRain;
+      const rows = [
+        { name: 'baseline', v: pBase, css: 'var(--slate)' },
+        { name: 'rain', v: rainPush, css: 'var(--blue)' },
+        { name: 'season', v: seasonPush, css: 'var(--magenta)' },
+      ];
+      const scale = Math.max(0.02, pFull * 1.15);
+      let html = '';
+      let acc = 0;
+      for (const row of rows) {
+        const w = Math.abs(row.v) / scale * 100;
+        const left = row.name === 'baseline' ? 0 : (row.v >= 0 ? acc / scale * 100 : (acc + row.v) / scale * 100);
+        html += `<div class="row"><span class="name">${row.name}</span>`
+             + `<span class="track"><span class="fill" style="left:${left.toFixed(1)}%;width:${w.toFixed(1)}%;background:${row.css}"></span></span>`
+             + `<span class="pct">${row.v >= 0 ? '+' : '−'}${(100*Math.abs(row.v)).toFixed(1)}%</span></div>`;
+        acc += row.v;
+      }
+      document.getElementById('attrib').innerHTML = html;
+    }
+
+    function drawCurve() {
+      const s = selected, d = season(), rNow = rain();
+      const svg = document.getElementById('curve');
+      const W = 600, H = 200, L = 44, R = 12, T = 12, B = 28;
+      const maxRain = 50;
+      let pmax = 0.0001;
+      for (let x = 0; x <= maxRain; x += 1) pmax = Math.max(pmax, pExceed(s, x, d));
+      pmax = Math.min(1, pmax * 1.15);
+      const X = r => L + r / maxRain * (W - L - R);
+      const Y = p => T + (1 - p / pmax) * (H - T - B);
+      let path = '';
+      for (let x = 0; x <= maxRain; x += 1) path += (x === 0 ? 'M' : 'L') + X(x).toFixed(1) + ' ' + Y(pExceed(s, x, d)).toFixed(1) + ' ';
+      // axes + gridlines
+      let g = `<line x1="${L}" y1="${T}" x2="${L}" y2="${H-B}" stroke="#ccc"/><line x1="${L}" y1="${H-B}" x2="${W-R}" y2="${H-B}" stroke="#ccc"/>`;
+      for (const pv of [0.25, 0.5, 0.75, 1].map(f => f * pmax)) {
+        g += `<text x="${L-6}" y="${(Y(pv)+3).toFixed(1)}" font-size="10" fill="#888" text-anchor="end">${Math.round(100*pv)}%</text>`;
+        g += `<line x1="${L}" y1="${Y(pv).toFixed(1)}" x2="${W-R}" y2="${Y(pv).toFixed(1)}" stroke="#f0f0f0"/>`;
+      }
+      for (const rv of [0, 10, 20, 30, 40, 50]) g += `<text x="${X(rv).toFixed(1)}" y="${H-10}" font-size="10" fill="#888" text-anchor="middle">${rv}</text>`;
+      g += `<text x="${(W+L)/2}" y="${H-1}" font-size="10" fill="#888" text-anchor="middle">antecedent rainfall (mm)</text>`;
+      // samples as ticks
+      let ticks = '';
+      for (const sm of (s.samples || [])) {
+        const x = X(Math.min(sm.rain, maxRain));
+        if (sm.state === 1) ticks += `<path d="M${x.toFixed(1)} ${T+4} l4 8 l-8 0 z" fill="${C_MAG}" opacity="0.85"/>`;
+        else ticks += `<path d="M${x.toFixed(1)} ${H-B-4} l4 -8 l-8 0 z" fill="${C_BLUE}" opacity="${sm.state===-1?0.35:0.7}"/>`;
+      }
+      // current rain marker
+      const cx = X(Math.min(rNow, maxRain)), cy = Y(pExceed(s, rNow, d));
+      const marker = `<line x1="${cx.toFixed(1)}" y1="${T}" x2="${cx.toFixed(1)}" y2="${H-B}" stroke="#bbb" stroke-dasharray="3 3"/>`
+                   + `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="5" fill="${C_MAG}" stroke="#fff" stroke-width="1.5"/>`;
+      svg.innerHTML = g + `<path d="${path}" fill="none" stroke="${C_BLUE}" stroke-width="2.5"/>` + ticks + marker;
+    }
+
+    function drawPanel() {
+      const s = selected, p = pExceed(s, rain(), season());
+      document.getElementById('sName').textContent = s.name;
+      document.getElementById('sMeta').textContent =
+        `Site ${s.point} · nearest gauge ${s.gauge} · fitted on ${s.n} samples`;
+      const el = document.getElementById('sP');
+      el.textContent = (100 * p).toFixed(1) + '%';
+      el.style.color = colour(p);
+      drawAttrib(); drawCurve();
+    }
+
+    function drawAll() { drawMap(); drawPanel(); }
+
+    document.getElementById('rain').addEventListener('input', e => {
+      document.getElementById('rainVal').textContent = parseFloat(e.target.value).toFixed(1) + ' mm';
+      drawAll();
+    });
+    document.getElementById('season').addEventListener('input', e => {
+      const dt = new Date(Date.UTC(2024, 0, 1) + (parseInt(e.target.value, 10) - 1) * 86400000);
+      document.getElementById('seasonVal').textContent =
+        dt.toLocaleDateString('en-GB', { month: 'long', day: 'numeric', timeZone: 'UTC' });
+      drawAll();
+    });
+
+    drawAll();
+  })();
+  </script>
+</body>
+</html>
