@@ -45,6 +45,35 @@ func (r Regression) ExceedanceProb(covars []float64, threshold float64) float64 
 	return normalCDF((r.Mean(covars) - math.Log(threshold)) / r.Sigma)
 }
 
+// InterceptVariance approximates the sampling variance of the fitted intercept
+// β0 from the curvature of the censored log-likelihood at the optimum (the
+// observed information, holding the other coefficients and σ fixed). Because
+// censored observations contribute less curvature than exact ones, this naturally
+// reports more uncertainty for heavily-censored sites — exactly the sites that
+// should borrow most strength when these variances feed the pooling step.
+func (r Regression) InterceptVariance(obs []CovObservation) float64 {
+	if len(obs) == 0 {
+		return math.Inf(1)
+	}
+	ll := func(b0 float64) float64 {
+		var s float64
+		for i := range obs {
+			mu := b0
+			for j, x := range obs[i].Covars {
+				mu += r.Beta[j+1] * x
+			}
+			s += logLikOne(Observation{LogValue: obs[i].LogValue, Censoring: obs[i].Censoring}, mu, r.Sigma)
+		}
+		return s
+	}
+	const h = 0.05
+	d2 := (ll(r.Beta[0]+h) - 2*ll(r.Beta[0]) + ll(r.Beta[0]-h)) / (h * h)
+	if d2 >= 0 {
+		return math.Inf(1) // not locally concave — treat as no information
+	}
+	return -1 / d2
+}
+
 // FitRegression maximises the censored log-likelihood of a linear-mean model.
 // Covariates are standardised internally for a well-conditioned optimisation and
 // the coefficients are returned on the original scale. nCov is the covariate

@@ -102,6 +102,44 @@ func TestRegressionBeatsInterceptOnly(t *testing.T) {
 	}
 }
 
+// TestInterceptVarianceMatchesMeanSE checks the intercept-variance approximation
+// against the textbook standard error of a mean: with uncensored data and no
+// covariates, Var(β0) ≈ σ²/n.
+func TestInterceptVarianceMatchesMeanSE(t *testing.T) {
+	r := rand.New(rand.NewSource(7))
+	const trueMu, trueSigma, n = 4.0, 1.1, 4000
+	cov := make([]CovObservation, n)
+	for i := range cov {
+		cov[i] = CovObservation{LogValue: r.NormFloat64()*trueSigma + trueMu, Censoring: bwq.Actual, Covars: []float64{}}
+	}
+	fit := FitRegression(cov, 0)
+	got := fit.InterceptVariance(cov)
+	want := fit.Sigma * fit.Sigma / float64(n)
+	if math.Abs(got-want)/want > 0.05 {
+		t.Errorf("intercept variance %.3e should match σ²/n %.3e", got, want)
+	}
+}
+
+// TestInterceptVarianceGrowsWithCensoring confirms the property pooling relies on:
+// censoring inflates the intercept's variance relative to fully-observed data.
+func TestInterceptVarianceGrowsWithCensoring(t *testing.T) {
+	obs, _, frac := synthetic(8, 4000, 3.6, 1.2, 50, 1500)
+	if frac < 0.4 {
+		t.Fatalf("test needs heavy censoring, got %.2f", frac)
+	}
+	cov := make([]CovObservation, len(obs))
+	uncensored := make([]CovObservation, len(obs))
+	for i, o := range obs {
+		cov[i] = CovObservation{LogValue: o.LogValue, Censoring: o.Censoring, Covars: []float64{}}
+		uncensored[i] = CovObservation{LogValue: o.LogValue, Censoring: bwq.Actual, Covars: []float64{}}
+	}
+	vc := FitRegression(cov, 0).InterceptVariance(cov)
+	vu := FitRegression(uncensored, 0).InterceptVariance(uncensored)
+	if !(vc > vu) {
+		t.Errorf("censored intercept variance %.3e should exceed uncensored %.3e", vc, vu)
+	}
+}
+
 // TestRegressionWithNoCovariatesMatchesGaussian checks the degenerate case: with
 // zero covariates the regression reduces to the intercept-only Gaussian fit.
 func TestRegressionWithNoCovariatesMatchesGaussian(t *testing.T) {

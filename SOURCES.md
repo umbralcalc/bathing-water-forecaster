@@ -120,12 +120,38 @@ point or page, not by year).
 
 ---
 
-## 2. Incumbent baseline — EA RiskPrediction (PRF) ⏳
+## 2. Incumbent baseline — EA RiskPrediction (PRF) ✅
 
-The official daily `normal`/`increased`/`unknown` short-term pollution-risk flag,
-PRF-enrolled sites only. Used **only** as a head-to-head comparison baseline
-(`cmd/vs-ea-prediction`), never as a model input. ⏳ Confirm the stp-risk-
-prediction endpoint path, site coverage, and cadence (PLAN gating check #5).
+The official daily short-term pollution-risk flag. Used **only** as a head-to-head
+comparison baseline (`cmd/vs-ea-prediction`), never as a model input.
+
+`GET /doc/bathing-water-quality/stp-risk-prediction.json` (ELDA, same platform).
+Per-site filter `?stp_samplingPoint.samplePointNotation=04700` (dotted-path, as on
+the sample feed). Item fields: `stp_samplingPoint` (flat URI, point notation in the
+trailing segment), `riskLevel` (`def/bwq-stp/{normal,increased,unknown}`),
+`predictedOn` (the forecast day), `publishedAt` (disambiguates re-issues for a day),
+`prfOriginType` (`PRF_PROVIDED`/`NON_PRF_SITE`/null).
+
+**Coverage (verified, PLAN check #5).** Cadence is **daily, 2013→2025**. Across a
+1000-row recent scan: ~5% `increased`, the rest `normal`. `prfOriginType` is
+**unreliable historically** (null on most older rows), so the dependable signal for
+"is this site actually EA-forecast" is whether it has any `increased` flags. In a
+7-site cluster only **3 were EA-forecast** (Seaton Sluice, Blyth, Spittal); 4
+(Whitley Bay, Amble, Bamburgh, Great Yarmouth) had **no** `increased` flag ever —
+concrete evidence for the "all designated sites, not only PRF ones" gap the project
+occupies. Notably the EA forecasts Spittal heavily (181 `increased`) despite its
+weak local rain association, while it does **not** forecast Whitley Bay, which has a
+strong one.
+
+**Head-to-head result (3 EA-forecast sites, 670 matched samples, 3.3% exceedance):**
+the EA flag discriminates well (27% exceedance on `increased` days vs 2% on `normal`).
+Scored out-of-sample, the calibrated model is **slightly worse on Brier**
+(−0.07 skill; the EA flag's sharp binary discrimination is hard to beat there) but
+**clearly better on log-loss** (0.135 vs 0.197), because 13 of 22 exceedances
+occurred on days the EA called `normal` — within-`normal` variation the continuous
+rainfall model captures and a binary flag cannot. The honest headline is exactly the
+PLAN's: comparable on the flag, with added calibration and coverage the official
+forecast doesn't provide.
 
 ---
 
