@@ -45,33 +45,134 @@ func (r Regression) ExceedanceProb(covars []float64, threshold float64) float64 
 	return normalCDF((r.Mean(covars) - math.Log(threshold)) / r.Sigma)
 }
 
-// InterceptVariance approximates the sampling variance of the fitted intercept
-// β0 from the curvature of the censored log-likelihood at the optimum (the
-// observed information, holding the other coefficients and σ fixed). Because
-// censored observations contribute less curvature than exact ones, this naturally
-// reports more uncertainty for heavily-censored sites — exactly the sites that
-// should borrow most strength when these variances feed the pooling step.
-func (r Regression) InterceptVariance(obs []CovObservation) float64 {
+// CoefVariances returns the approximate sampling variance of each fitted
+// coefficient (Beta[0] intercept, Beta[1:] covariate slopes), from the diagonal
+// of the inverse observed-information matrix — the negative Hessian of the
+// censored log-likelihood at the optimum, with σ held fixed. Working with the
+// full Hessian (rather than one coefficient at a time) accounts for the
+// correlation between the intercept and the slopes, and because censored
+// observations contribute less curvature, heavily-censored sites correctly report
+// larger variances — exactly the sites that should borrow most strength when these
+// variances feed the pooling step.
+func (r Regression) CoefVariances(obs []CovObservation) []float64 {
+	nb := len(r.Beta)
+	out := make([]float64, nb)
 	if len(obs) == 0 {
-		return math.Inf(1)
+		for i := range out {
+			out[i] = math.Inf(1)
+		}
+		return out
 	}
-	ll := func(b0 float64) float64 {
+	ll := func(beta []float64) float64 {
 		var s float64
 		for i := range obs {
-			mu := b0
+			mu := beta[0]
 			for j, x := range obs[i].Covars {
-				mu += r.Beta[j+1] * x
+				mu += beta[j+1] * x
 			}
 			s += logLikOne(Observation{LogValue: obs[i].LogValue, Censoring: obs[i].Censoring}, mu, r.Sigma)
 		}
 		return s
 	}
-	const h = 0.05
-	d2 := (ll(r.Beta[0]+h) - 2*ll(r.Beta[0]) + ll(r.Beta[0]-h)) / (h * h)
-	if d2 >= 0 {
-		return math.Inf(1) // not locally concave — treat as no information
+	step := make([]float64, nb)
+	for i := range step {
+		step[i] = 1e-3 * (1 + math.Abs(r.Beta[i]))
 	}
-	return -1 / d2
+	// Negative Hessian by central finite differences.
+	H := make([][]float64, nb)
+	for i := range H {
+		H[i] = make([]float64, nb)
+	}
+	for i := 0; i < nb; i++ {
+		for j := i; j < nb; j++ {
+			var d2 float64
+			if i == j {
+				d2 = (ll(bump(r.Beta, i, step[i])) - 2*ll(r.Beta) + ll(bump(r.Beta, i, -step[i]))) / (step[i] * step[i])
+			} else {
+				pp := bump2(r.Beta, i, step[i], j, step[j])
+				pm := bump2(r.Beta, i, step[i], j, -step[j])
+				mp := bump2(r.Beta, i, -step[i], j, step[j])
+				mm := bump2(r.Beta, i, -step[i], j, -step[j])
+				d2 = (ll(pp) - ll(pm) - ll(mp) + ll(mm)) / (4 * step[i] * step[j])
+			}
+			H[i][j] = -d2
+			H[j][i] = -d2
+		}
+	}
+	cov, ok := invertSym(H)
+	if !ok {
+		for i := range out {
+			out[i] = math.Inf(1)
+		}
+		return out
+	}
+	for i := 0; i < nb; i++ {
+		out[i] = cov[i][i]
+		if out[i] < 0 {
+			out[i] = math.Inf(1)
+		}
+	}
+	return out
+}
+
+// InterceptVariance is the sampling variance of the fitted intercept β0.
+func (r Regression) InterceptVariance(obs []CovObservation) float64 {
+	return r.CoefVariances(obs)[0]
+}
+
+func bump(beta []float64, i int, h float64) []float64 {
+	out := append([]float64(nil), beta...)
+	out[i] += h
+	return out
+}
+
+func bump2(beta []float64, i int, hi float64, j int, hj float64) []float64 {
+	out := append([]float64(nil), beta...)
+	out[i] += hi
+	out[j] += hj
+	return out
+}
+
+// invertSym inverts a symmetric matrix by Gauss–Jordan elimination with partial
+// pivoting. It returns ok=false on a singular matrix.
+func invertSym(A [][]float64) ([][]float64, bool) {
+	n := len(A)
+	m := make([][]float64, n)
+	for i := range m {
+		m[i] = make([]float64, 2*n)
+		copy(m[i], A[i])
+		m[i][n+i] = 1
+	}
+	for col := 0; col < n; col++ {
+		piv := col
+		for r := col + 1; r < n; r++ {
+			if math.Abs(m[r][col]) > math.Abs(m[piv][col]) {
+				piv = r
+			}
+		}
+		if math.Abs(m[piv][col]) < 1e-14 {
+			return nil, false
+		}
+		m[col], m[piv] = m[piv], m[col]
+		d := m[col][col]
+		for k := 0; k < 2*n; k++ {
+			m[col][k] /= d
+		}
+		for r := 0; r < n; r++ {
+			if r == col {
+				continue
+			}
+			f := m[r][col]
+			for k := 0; k < 2*n; k++ {
+				m[r][k] -= f * m[col][k]
+			}
+		}
+	}
+	inv := make([][]float64, n)
+	for i := range inv {
+		inv[i] = append([]float64(nil), m[i][n:]...)
+	}
+	return inv, true
 }
 
 // FitRegression maximises the censored log-likelihood of a linear-mean model.

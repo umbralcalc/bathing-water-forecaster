@@ -120,6 +120,34 @@ func TestInterceptVarianceMatchesMeanSE(t *testing.T) {
 	}
 }
 
+// TestSlopeVarianceMatchesOLS checks the Hessian-based slope variance against the
+// textbook OLS result Var(β1) = σ²/Σ(xᵢ−x̄)² for uncensored data.
+func TestSlopeVarianceMatchesOLS(t *testing.T) {
+	r := rand.New(rand.NewSource(11))
+	const n = 5000
+	const b0, b1, sigma = 2.0, 0.08, 0.9
+	cov := make([]CovObservation, n)
+	var sx, sxx float64
+	xs := make([]float64, n)
+	for i := range cov {
+		x := r.Float64() * 30
+		xs[i] = x
+		sx += x
+		y := b0 + b1*x + r.NormFloat64()*sigma
+		cov[i] = CovObservation{LogValue: y, Censoring: bwq.Actual, Covars: []float64{x}}
+	}
+	xbar := sx / n
+	for _, x := range xs {
+		sxx += (x - xbar) * (x - xbar)
+	}
+	fit := FitRegression(cov, 1)
+	got := fit.CoefVariances(cov)[1]
+	want := fit.Sigma * fit.Sigma / sxx
+	if math.Abs(got-want)/want > 0.08 {
+		t.Errorf("slope variance %.3e should match σ²/Σ(x−x̄)² %.3e", got, want)
+	}
+}
+
 // TestInterceptVarianceGrowsWithCensoring confirms the property pooling relies on:
 // censoring inflates the intercept's variance relative to fully-observed data.
 func TestInterceptVarianceGrowsWithCensoring(t *testing.T) {

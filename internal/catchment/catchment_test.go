@@ -53,6 +53,28 @@ func TestAntecedentRainfall(t *testing.T) {
 	}
 }
 
+func TestRainfallBetweenLaggedWindow(t *testing.T) {
+	readings := []hydro.Reading{
+		{Date: day("2026-05-30"), Value: 0.6, Valid: true},
+		{Date: day("2026-05-31"), Value: 0.2, Valid: true},
+		{Date: day("2026-06-01"), Value: 6.1, Valid: true},
+		{Date: day("2026-06-02"), Value: 24.2, Valid: true},
+		{Date: day("2026-06-03"), Value: 3.4, Valid: true},
+	}
+	sample := day("2026-06-02").Add(10 * time.Hour)
+
+	// "prior" lag = days 2–4 back = 2026-05-29..05-31 → only 05-30 and 05-31 present.
+	if total, cov := RainfallBetween(readings, sample, 4, 2); math.Abs(total-0.8) > 1e-9 || cov != 2 {
+		t.Errorf("lag[4..2] = %.1f (cov %d), want 0.8 (2)", total, cov)
+	}
+	// AntecedentRainfall(days=2) must equal RainfallBetween(1,0).
+	a, _ := AntecedentRainfall(readings, sample, 2)
+	b, _ := RainfallBetween(readings, sample, 1, 0)
+	if a != b {
+		t.Errorf("AntecedentRainfall(2)=%.1f should equal RainfallBetween(1,0)=%.1f", a, b)
+	}
+}
+
 func TestAntecedentRainfallSkipsInvalid(t *testing.T) {
 	readings := []hydro.Reading{
 		{Date: day("2026-06-01"), Value: 6.1, Valid: true},

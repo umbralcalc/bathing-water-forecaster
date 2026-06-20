@@ -53,14 +53,28 @@ func AntecedentRainfall(readings []hydro.Reading, sampleTime time.Time, days int
 	if days < 1 {
 		return 0, 0
 	}
+	return RainfallBetween(readings, sampleTime, days-1, 0)
+}
+
+// RainfallBetween sums valid daily rainfall over a lagged window: the days in
+// [sampleDay − startDaysBack, sampleDay − endDaysBack] inclusive, with
+// startDaysBack ≥ endDaysBack ≥ 0. It is the building block for several rain-lag
+// covariates — e.g. RainfallBetween(.,.,1,0) is the 2-day antecedent total, while
+// RainfallBetween(.,.,6,2) is the "prior-week" lag (days 2–6 before the sample),
+// letting a model separate fresh runoff from earlier catchment wetting.
+func RainfallBetween(readings []hydro.Reading, sampleTime time.Time, startDaysBack, endDaysBack int) (total float64, covered int) {
+	if startDaysBack < endDaysBack || endDaysBack < 0 {
+		return 0, 0
+	}
 	sampleDay := truncateDay(sampleTime)
-	earliest := sampleDay.AddDate(0, 0, -(days - 1))
+	lo := sampleDay.AddDate(0, 0, -startDaysBack)
+	hi := sampleDay.AddDate(0, 0, -endDaysBack)
 	for _, r := range readings {
 		if !r.Valid {
 			continue
 		}
 		d := truncateDay(r.Date)
-		if !d.Before(earliest) && !d.After(sampleDay) {
+		if !d.Before(lo) && !d.After(hi) {
 			total += r.Value
 			covered++
 		}
