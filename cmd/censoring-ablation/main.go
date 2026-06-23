@@ -1,5 +1,5 @@
 // Command censoring-ablation measures, on real data, the calibration cost of
-// ignoring censoring — the honest figure the PLAN promises. It runs the identical
+// ignoring censoring — the honest figure for the cost of the shortcut. It runs the identical
 // expanding-window backtest twice: once with the censored likelihood (treating a
 // "< 10" reading as the interval observation it is) and once naively (substituting
 // the reporting cap as if it were an exact count). Both are scored against the

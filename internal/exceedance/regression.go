@@ -18,7 +18,7 @@ type CovObservation struct {
 
 // Regression is a censored Gaussian model whose latent log-count mean is linear
 // in the covariates: log c ~ Normal(β0 + Σ_j βj·xj, σ). It is the single-site
-// bridge between the intercept-only [GaussianFit] and the PLAN's hierarchical
+// bridge between the intercept-only [GaussianFit] and the full hierarchical
 // model — same censored likelihood, a structured mean. Every observation, censored
 // or not, contributes through its proper density / CDF / survival term.
 type Regression struct {

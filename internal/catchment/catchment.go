@@ -2,7 +2,7 @@
 // (and, later, flow) gauges whose antecedent readings drive its exceedance risk.
 //
 // This first cut links by distance: the nearest rainfall gauges to the site's
-// coordinates. The PLAN's fuller linkage uses each water's published zone of
+// coordinates. A fuller linkage would use each water's published zone of
 // influence and named storm-overflow/outfall features to choose hydrologically
 // upstream gauges rather than merely near ones; that refinement layers on top of
 // the same types and the same antecedent-rainfall machinery established here.

@@ -1,6 +1,6 @@
 // Command exceedance-backtest runs an expanding-window, no-leakage backtest of
 // the rainfall-driven exceedance model and scores it against the two baselines
-// the PLAN sets as the bar: a per-site seasonal base rate, and the naive "did it
+// that set the bar: a per-site seasonal base rate, and the naive "did it
 // rain recently" rule.
 //
 //	exceedance-backtest -points 04700,04600,03600 -window 2 -threshold 500

@@ -1,7 +1,7 @@
 // Command export-dashboard fits the rain+season model for a set of sites and
 // writes their coefficients, locations, and recent resolved samples to
 // dashboard/data.js as `window.FORECAST_DATA`. The static dashboard then computes
-// P(exceedance) client-side from these coefficients — the PLAN's idea of shipping
+// P(exceedance) client-side from these coefficients — the idea of shipping
 // the fitted model to the reader so the rainfall→exceedance explorer runs live.
 //
 //	export-dashboard -all -limit 140 -out dashboard/data.js

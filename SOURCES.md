@@ -56,7 +56,7 @@ Verified item shape (point 36071, 2025-W35):
 most-recent samples: E. coli `<`×180, `=`×119, `>`×1; enterococci `<`×193,
 `=`×107. **>60% of observations are left-censored** ("below reporting limit").
 Treating these as point values is not an option — the censored likelihood is
-load-bearing (see PLAN "Validation & honesty rules" and `cmd/censoring-ablation`).
+load-bearing (see `cmd/censoring-ablation`).
 
 **Republished revisions — must dedupe (verified).** The same physical sample is
 published multiple times under different `recordDate` values as the lab result is
@@ -77,13 +77,13 @@ loaded historical series, not contemporaneous in-season publication — fine for
 backtesting, worth stating.)
 
 **Abnormal-weather flag — it's `discountable`, NOT `abnormalWeatherException`
-(verified, corrects PLAN naming).** No `abnormalWeatherException` field exists on
+(verified).** No `abnormalWeatherException` field exists on
 items; the only relevant key is the `discountable` boolean (a sample eligible to
 be discounted from the annual classification under abnormal-situation rules,
 `def/.../AbnormalSituation`). It is uniformly `false` across the 1000 most-recent
 samples — discounting is rare. ⏳ Find a `discountable=true` example in historical
-data to confirm semantics; update PLAN's "abnormalWeatherException" references.
-`SuspensionOfMonitoring` / `PollutionIncident` (PLAN) are not surfaced on the
+data to confirm semantics.
+`SuspensionOfMonitoring` / `PollutionIncident` are not surfaced on the
 in-season sample item — ⏳ locate them (likely separate concepts/endpoints).
 
 ### Thresholds — statutory constants, NOT an endpoint ⏳
@@ -132,7 +132,7 @@ trailing segment), `riskLevel` (`def/bwq-stp/{normal,increased,unknown}`),
 `predictedOn` (the forecast day), `publishedAt` (disambiguates re-issues for a day),
 `prfOriginType` (`PRF_PROVIDED`/`NON_PRF_SITE`/null).
 
-**Coverage (verified, PLAN check #5).** Cadence is **daily, 2013→2025**. Across a
+**Coverage (verified).** Cadence is **daily, 2013→2025**. Across a
 1000-row recent scan: ~5% `increased`, the rest `normal`. `prfOriginType` is
 **unreliable historically** (null on most older rows), so the dependable signal for
 "is this site actually EA-forecast" is whether it has any `increased` flags. In a
@@ -150,7 +150,7 @@ Scored out-of-sample, the calibrated model is **slightly worse on Brier**
 **clearly better on log-loss** (0.135 vs 0.197), because 13 of 22 exceedances
 occurred on days the EA called `normal` — within-`normal` variation the continuous
 rainfall model captures and a binary flag cannot. The honest headline is exactly the
-PLAN's: comparable on the flag, with added calibration and coverage the official
+honest read: comparable on the flag, with added calibration and coverage the official
 forecast doesn't provide.
 
 ---
@@ -180,7 +180,7 @@ a later live-latency addition behind the same types.
 (`/id/stations?parameter=rainfall&lat=&long=&dist=`), 15-min readings, but only a
 rolling recent window — right for in-season live forecasting, wrong for history.
 
-**Linkage & association — verified (PLAN check #2).** `internal/catchment` links a
+**Linkage & association — verified.** `internal/catchment` links a
 site (coordinates from the compliance feed) to its nearest daily-rainfall gauge by
 haversine distance and sums antecedent rainfall over a day-window before each
 sample. `cmd/link-catchment` runs the rain→count sanity check. Across 12 sites
@@ -199,7 +199,7 @@ association is **present where expected and flat where expected**:
 
 The causal backbone is real (wet-day exceedance up to ~12× dry-day at urban
 Northumberland beaches) but **site-dependent** — estuary/large-catchment and very-
-clean sites show no nearest-gauge signal, motivating the PLAN's zone-of-influence
+clean sites show no nearest-gauge signal, motivating the zone-of-influence
 linkage, rain-lag selection, and hierarchical pooling rather than a universal rain
 rule. Note also that at clean sites most counts are left-censored (`<10`), so the
 uncensored-only Pearson is thin there — the censored model (`internal/exceedance`)

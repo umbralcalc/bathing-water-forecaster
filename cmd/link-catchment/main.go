@@ -1,6 +1,6 @@
 // Command link-catchment links a bathing-water sampling point to its nearest
 // rainfall gauge and sanity-checks the rain→count association across the site's
-// sample history — PLAN gating check #2, the first test of the causal backbone
+// sample history — the first test of the causal backbone
 // before the rainfall-driven model is committed to.
 //
 //	link-catchment -point 03600 -dist 15 -window 2

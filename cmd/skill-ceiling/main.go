@@ -2,7 +2,7 @@
 // fits a ladder of nested models of increasing richness and scores each one both
 // in-sample (an optimistic ceiling — the best that covariate set could do with
 // perfect estimation) and out-of-sample (what is realised once the parameters
-// must be learned). The gaps answer two questions the PLAN poses:
+// must be learned). The gaps answer two questions:
 //
 //   - How much of exceedance is predictable at all, versus irreducible given
 //     weekly, censored, rare-event sampling? (climatology vs the richest ceiling)

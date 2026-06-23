@@ -2,7 +2,7 @@
 // It fits each site's dry-day baseline (the regression intercept) on a training
 // span, partially pools those baselines at two depths — within NUTS1 region, and
 // nationally — and scores all three options (no pooling / regional / national) on
-// a held-out span by out-of-sample exceedance log-loss, the PLAN's chosen
+// a held-out span by out-of-sample exceedance log-loss, the chosen
 // criterion. The headline question: does borrowing strength for the baseline help,
 // and most of all at the sparse, data-poor sites?
 //
