@@ -17,6 +17,8 @@ import (
 	"os"
 	"sort"
 	"strings"
+	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/umbralcalc/bathing-water-forecaster/internal/bwq"
@@ -61,6 +63,10 @@ func main() {
 	window := flag.Int("window", 2, "antecedent rainfall window (days)")
 	threshold := flag.Float64("threshold", 500, "E. coli exceedance cut")
 	recent := flag.Int("recent", 24, "recent resolved samples to include per site")
+	workers := flag.Int("workers", 8, "concurrent site fetches (higher risks EA API throttling)")
+	cacheDir := flag.String("cache", "data/raw/sites", "directory for cached site pulls (\"\" disables)")
+	maxAge := flag.Duration("max-age", 7*24*time.Hour, "refetch a cached site once it is older than this (0 = never)")
+	refresh := flag.Bool("refresh", false, "ignore the cache and refetch every site")
 	out := flag.String("out", "dashboard/data.js", "output file")
 	flag.Parse()
 	if *pointsCSV != "" {
@@ -75,21 +81,53 @@ func main() {
 	if err != nil {
 		log.Fatalf("targets: %v", err)
 	}
-	log.Printf("exporting %d site(s)", len(targets))
+	log.Printf("exporting %d site(s) with %d workers", len(targets), *workers)
 
 	data := dataOut{
 		Generated: time.Now().UTC().Format("2006-01-02"),
 		Threshold: *threshold,
 		Window:    *window,
 	}
-	for _, tgt := range targets {
-		site, err := siteload.Load(ctx, bw, hy, tgt.Notation, tgt.Lat, tgt.Long, tgt.Name, *dist, *window)
-		if err != nil {
-			continue
+
+	// The per-site work is independent and network-bound, so fan it out across a
+	// worker pool; results are collected on the main goroutine (no shared state).
+	jobs := make(chan bwq.SamplingPoint)
+	results := make(chan siteOut)
+	var hits, fresh int64
+	var wg sync.WaitGroup
+	for w := 0; w < *workers; w++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for tgt := range jobs {
+				site, cached, err := siteload.LoadCached(ctx, bw, hy, tgt.Notation, tgt.Lat, tgt.Long, tgt.Name, *dist, *window, *cacheDir, *maxAge, *refresh)
+				if err != nil {
+					continue
+				}
+				if cached {
+					atomic.AddInt64(&hits, 1)
+				} else {
+					atomic.AddInt64(&fresh, 1)
+				}
+				if so, ok := exportSite(site, *window, *threshold, *recent); ok {
+					results <- so
+				}
+			}
+		}()
+	}
+	go func() {
+		for _, tgt := range targets {
+			jobs <- tgt
 		}
-		so, ok := exportSite(site, *window, *threshold, *recent)
-		if ok {
-			data.Sites = append(data.Sites, so)
+		close(jobs)
+	}()
+	go func() { wg.Wait(); close(results) }()
+
+	done := 0
+	for so := range results {
+		data.Sites = append(data.Sites, so)
+		if done++; done%50 == 0 {
+			log.Printf("  %d sites fetched", done)
 		}
 	}
 	if len(data.Sites) == 0 {
@@ -104,7 +142,22 @@ func main() {
 	if err := os.WriteFile(*out, []byte("window.FORECAST_DATA = "+string(blob)+";\n"), 0o644); err != nil {
 		log.Fatalf("write: %v", err)
 	}
-	fmt.Printf("wrote %d sites to %s\n", len(data.Sites), *out)
+	fmt.Printf("wrote %d sites to %s (%d from cache, %d freshly fetched)\n",
+		len(data.Sites), *out, hits, fresh)
+}
+
+// plausibleFit rejects degenerate fits — typically sites where nearly every
+// count is censored ("< limit"), so the latent mean is unidentifiable and the
+// optimiser collapses σ→0 with exploding coefficients. Such a fit produces a
+// meaningless step-function forecast, so it is excluded from the dashboard rather
+// than shown. Bounds are deliberately generous; real bacterial log-counts have
+// σ ≈ 1–3, per-mm rain effects well under 1, and seasonal swings under ~e⁴×.
+func plausibleFit(f exceedance.Regression) bool {
+	seasonAmp := math.Hypot(f.Beta[2], f.Beta[3])
+	return f.Sigma >= 0.3 && f.Sigma <= 10 &&
+		math.Abs(f.Beta[0]) <= 20 &&
+		math.Abs(f.Beta[1]) <= 1.0 &&
+		seasonAmp <= 4
 }
 
 func exportSite(site forecast.Site, window int, threshold float64, recent int) (siteOut, bool) {
@@ -140,6 +193,9 @@ func exportSite(site forecast.Site, window int, threshold float64, recent int) (
 		return siteOut{}, false
 	}
 	fit := exceedance.FitRegression(obs, 3)
+	if !plausibleFit(fit) {
+		return siteOut{}, false // degenerate fit (e.g. all-censored site, σ→0)
+	}
 
 	// Most-recent resolved samples for the overlay.
 	sort.Slice(rows, func(i, j int) bool { return rows[i].t.After(rows[j].t) })

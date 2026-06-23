@@ -74,7 +74,7 @@
     .attrib { margin: 1rem 0 .25rem; }
     .attrib .row { display: grid; grid-template-columns: 80px 1fr 70px; align-items: center; gap: .6rem; margin-bottom: .4rem; font-size: .9rem; }
     .attrib .name { color: var(--slate); font-weight: 600; }
-    .attrib .track { background: #eef1f5; height: 16px; position: relative; }
+    .attrib .track { background: #eef1f5; height: 16px; position: relative; overflow: hidden; }
     .attrib .fill { position: absolute; top: 0; height: 100%; }
     .attrib .pct { text-align: right; font-variant-numeric: tabular-nums; color: #555; }
 
@@ -173,6 +173,9 @@
 
   <script src="data.js"></script>
   <script>
+  // Simplified Great Britain coastline (Douglas–Peucker, ~3 km), [lon, lat].
+  const UK_OUTLINE = /*__UK_OUTLINE__*/[[-3.09,58.711],[-3.862,58.59],[-4.026,58.624],[-4.246,58.565],[-5.032,58.65],[-5.065,58.564],[-5.164,58.495],[-5.153,58.446],[-5.243,58.389],[-5.24,58.301],[-5.433,58.276],[-5.383,58.129],[-5.474,58.133],[-5.532,57.982],[-5.864,57.874],[-5.831,57.613],[-5.889,57.534],[-5.897,57.374],[-5.949,57.347],[-5.982,57.418],[-5.949,57.598],[-6.119,57.469],[-6.078,57.545],[-6.108,57.603],[-6.312,57.739],[-6.468,57.657],[-6.419,57.59],[-6.441,57.548],[-6.515,57.615],[-6.669,57.632],[-6.696,57.529],[-6.812,57.466],[-6.823,57.418],[-6.754,57.364],[-6.54,57.324],[-6.29,57.117],[-6.034,57.135],[-6.067,57.05],[-6.037,57.011],[-5.836,57.056],[-5.952,56.896],[-5.842,56.858],[-6.262,56.744],[-6.257,56.695],[-6.18,56.665],[-6.342,56.621],[-6.515,56.44],[-6.364,56.472],[-6.419,56.428],[-6.213,56.423],[-6.243,56.362],[-6.485,56.356],[-6.504,56.277],[-6.295,56.239],[-5.776,56.307],[-5.595,56.438],[-5.49,56.453],[-5.853,56.228],[-5.768,56.202],[-5.787,56.136],[-5.908,56.1],[-6.062,55.965],[-6.476,55.895],[-6.564,55.682],[-6.534,55.65],[-6.356,55.701],[-6.317,55.661],[-6.375,55.575],[-6.301,55.557],[-6.001,55.642],[-6.004,55.761],[-5.924,55.784],[-5.647,56.093],[-5.773,55.931],[-5.691,55.868],[-5.669,55.752],[-5.839,55.681],[-5.757,55.564],[-5.773,55.457],[-5.839,55.404],[-5.82,55.284],[-5.537,55.263],[-5.435,55.608],[-5.372,55.465],[-5.268,55.415],[-5.078,55.423],[-5.056,55.564],[-5.114,55.67],[-5.29,55.761],[-5.257,55.815],[-4.881,55.622],[-4.738,55.6],[-4.68,55.502],[-5.221,54.984],[-5.21,54.861],[-5.087,54.78],[-5.015,54.658],[-4.826,54.617],[-4.897,54.796],[-4.839,54.826],[-4.389,54.652],[-4.326,54.691],[-4.32,54.815],[-4.18,54.744],[-4.005,54.747],[-3.59,54.851],[-3.527,54.943],[-3.337,54.938],[-3.546,54.744],[-3.678,54.499],[-3.48,54.345],[-3.491,54.3],[-3.304,54.158],[-3.312,54.093],[-3.235,54.03],[-3.051,54.092],[-3.04,54.135],[-2.873,54.162],[-2.862,54.113],[-2.95,54.034],[-2.925,53.963],[-3.076,53.927],[-3.087,53.734],[-2.988,53.711],[-3.156,53.547],[-3.095,53.472],[-3.26,53.398],[-3.211,53.331],[-3.296,53.377],[-3.562,53.319],[-3.856,53.359],[-3.917,53.346],[-3.895,53.303],[-4.178,53.319],[-4.238,53.419],[-4.436,53.442],[-4.598,53.423],[-4.612,53.334],[-4.735,53.321],[-4.73,53.282],[-4.373,53.086],[-4.757,52.872],[-4.842,52.763],[-4.82,52.726],[-4.606,52.803],[-4.524,52.761],[-4.433,52.808],[-4.447,52.838],[-4.191,52.886],[-4.092,52.71],[-4.161,52.658],[-4.092,52.513],[-4.153,52.377],[-4.287,52.253],[-4.812,52.078],[-5.103,52.037],[-5.122,51.987],[-5.383,51.876],[-5.37,51.836],[-5.147,51.844],[-5.155,51.797],[-5.334,51.754],[-5.337,51.698],[-5.1,51.637],[-5.109,51.606],[-4.897,51.575],[-4.853,51.618],[-4.655,51.621],[-4.658,51.7],[-4.548,51.719],[-4.389,51.69],[-4.356,51.563],[-4.257,51.521],[-3.842,51.584],[-3.755,51.476],[-3.557,51.377],[-3.167,51.38],[-3.046,51.5],[-2.741,51.538],[-2.988,51.409],[-3.054,51.336],[-3.06,51.234],[-4.219,51.24],[-4.296,51.148],[-4.254,51.093],[-4.293,51.048],[-4.37,51.014],[-4.554,51.047],[-4.601,50.929],[-4.581,50.813],[-4.809,50.637],[-5.051,50.557],[-5.078,50.463],[-5.175,50.426],[-5.177,50.361],[-5.438,50.226],[-5.51,50.244],[-5.71,50.168],[-5.74,50.061],[-5.702,50.015],[-5.485,50.098],[-5.334,50.05],[-5.262,49.939],[-5.177,49.939],[-5.087,49.979],[-5.045,50.091],[-4.785,50.202],[-4.708,50.303],[-4.406,50.333],[-3.908,50.259],[-3.928,50.228],[-3.705,50.18],[-3.496,50.333],[-3.461,50.4],[-3.527,50.433],[-3.439,50.437],[-3.472,50.517],[-3.417,50.583],[-2.903,50.7],[-2.681,50.648],[-2.488,50.554],[-2.464,50.492],[-2.379,50.554],[-2.42,50.608],[-2.082,50.554],[-1.939,50.578],[-1.884,50.672],[-1.689,50.705],[-1.601,50.691],[-1.637,50.646],[-1.425,50.613],[-1.324,50.548],[-1.162,50.583],[-1.041,50.691],[-1.088,50.752],[-0.937,50.759],[-0.786,50.705],[-0.711,50.75],[-0.176,50.808],[0.272,50.714],[0.387,50.806],[0.604,50.823],[0.758,50.903],[1.003,50.896],[1.008,50.995],[1.425,51.148],[1.414,51.303],[1.472,51.391],[0.994,51.365],[0.758,51.469],[0.981,51.613],[0.989,51.751],[1.203,51.77],[1.343,51.851],[1.329,51.907],[1.607,52.076],[1.664,52.268],[1.788,52.458],[1.794,52.6],[1.717,52.751],[1.274,52.962],[1.057,52.988],[0.47,52.975],[0.363,52.848],[0.272,52.841],[0.113,52.924],[0.417,53.134],[0.19,53.503],[0.036,53.589],[0.165,53.573],[0.135,53.674],[-0.173,54.005],[-0.159,54.069],[-0.033,54.132],[-0.211,54.201],[-0.706,54.561],[-1.121,54.661],[-1.241,54.761],[-1.324,54.962],[-1.489,55.154],[-1.461,55.193],[-1.535,55.281],[-1.524,55.346],[-1.568,55.373],[-1.535,55.427],[-1.596,55.547],[-1.772,55.702],[-1.868,55.707],[-2.082,55.909],[-2.554,56.023],[-2.579,56.069],[-2.881,56.057],[-2.947,55.989],[-3.065,55.963],[-3.233,55.995],[-3.249,56.028],[-3.101,56.034],[-3.134,56.098],[-2.931,56.191],[-2.791,56.176],[-2.554,56.281],[-2.774,56.352],[-2.769,56.453],[-2.483,56.588],[-2.488,56.652],[-2.178,56.888],[-2.178,56.963],[-2.021,57.139],[-2.054,57.181],[-1.958,57.309],[-1.75,57.452],[-1.805,57.62],[-2.093,57.726],[-2.417,57.694],[-2.865,57.723],[-3.038,57.684],[-3.296,57.745],[-3.87,57.61],[-4.043,57.61],[-3.73,57.883],[-3.958,57.87],[-3.958,57.938],[-3.131,58.308],[-3.01,58.456],[-3.095,58.507],[-2.991,58.65],[-3.09,58.711]];
+
   (function () {
     const DATA = window.FORECAST_DATA;
     if (!DATA) { document.getElementById('sName').textContent = 'data.js not found'; return; }
@@ -190,6 +193,11 @@
     function ncdf(x) { return 0.5 * (1 + erf(x / SQRT2)); }
     function seasonTerms(doy) { const a = 2 * Math.PI * doy / 365.25; return [Math.sin(a), Math.cos(a)]; }
     function mu(s, rain, doy) { const [si, co] = seasonTerms(doy); return s.beta[0] + s.beta[1] * rain + s.beta[2] * si + s.beta[3] * co; }
+    // Mean seasonal terms over the bathing season (doy 121–273). The season
+    // contribution is measured against this — a typical bathing-season day — rather
+    // than the annual average the slider never shows, so the bar reads "dirtier /
+    // cleaner than a normal summer day" and crosses zero across the range.
+    const SEASON0 = (() => { let si = 0, co = 0, n = 0; for (let doy = 121; doy <= 273; doy++) { const [a, b] = seasonTerms(doy); si += a; co += b; n++; } return [si / n, co / n]; })();
     function pExceed(s, rain, doy) { return ncdf((mu(s, rain, doy) - LOGTHR) / s.sigma); }
 
     // colour ramp blue -> mid -> magenta, emphasising the low range where most sites live
@@ -215,8 +223,13 @@
     const H = Math.round((W - 2 * PAD) * spanLat / spanLon) + 2 * PAD;
     const mapSvg = document.getElementById('map');
     mapSvg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-    function px(s) { return PAD + (s.long - lonMin) * cosLat / spanLon * (W - 2 * PAD); }
-    function py(s) { return PAD + (latMax - s.lat) / spanLat * (H - 2 * PAD); }
+    function projX(lon) { return PAD + (lon - lonMin) * cosLat / spanLon * (W - 2 * PAD); }
+    function projY(lat) { return PAD + (latMax - lat) / spanLat * (H - 2 * PAD); }
+    function px(s) { return projX(s.long); }
+    function py(s) { return projY(s.lat); }
+    // Grey GB landmass drawn behind the points, projected with the same mapping so
+    // it registers with the dots (Scotland falls above the England-framed viewBox).
+    const outlinePath = 'M' + UK_OUTLINE.map(([lon, lat]) => projX(lon).toFixed(1) + ' ' + projY(lat).toFixed(1)).join(' L') + ' Z';
 
     let selected = sites.find(s => s.point === '04700') || sites[0];
 
@@ -225,7 +238,7 @@
 
     function drawMap() {
       const r = rain(), d = season();
-      let html = '';
+      let html = `<path d="${outlinePath}" fill="#edf0f4" stroke="#cfd6df" stroke-width="0.8" stroke-linejoin="round"/>`;
       // ordered so higher-risk dots draw on top
       const ordered = sites.map(s => ({ s, p: pExceed(s, r, d) })).sort((a, b) => a.p - b.p);
       for (const { s, p } of ordered) {
@@ -242,30 +255,31 @@
         `${sites.length} sites · highest now: ${hi.s.name} (${(100*hi.p).toFixed(0)}%)`;
     }
 
-    function bar(name, value, base, colourCss) {
-      // value is a signed probability contribution; scale bars against the total span
-      return { name, value, base, colourCss };
-    }
     function drawAttrib() {
       const s = selected, r = rain(), d = season();
-      const [si, co] = seasonTerms(d);
-      const pBase = ncdf((s.beta[0] - LOGTHR) / s.sigma);                       // rain 0, avg season
-      const pRain = ncdf((s.beta[0] + s.beta[1]*r - LOGTHR) / s.sigma);          // + rain
-      const pFull = pExceed(s, r, d);                                           // + season
+      const s0 = s.beta[2] * SEASON0[0] + s.beta[3] * SEASON0[1];               // typical-season seasonal level
+      const pBase = ncdf((s.beta[0] + s0 - LOGTHR) / s.sigma);                  // dry, typical-season day
+      const pRain = ncdf((s.beta[0] + s.beta[1]*r + s0 - LOGTHR) / s.sigma);     // + rain
+      const pFull = pExceed(s, r, d);                                           // + this day's season
       const rainPush = pRain - pBase, seasonPush = pFull - pRain;
       const rows = [
         { name: 'baseline', v: pBase, css: 'var(--slate)' },
         { name: 'rain', v: rainPush, css: 'var(--blue)' },
         { name: 'season', v: seasonPush, css: 'var(--magenta)' },
       ];
-      const scale = Math.max(0.02, pFull * 1.15);
+      // The waterfall runs 0 → pBase → pRain → pFull; a negative season push makes
+      // pBase/pRain exceed pFull, so the bars must be scaled by the furthest reach,
+      // not the final value, or they overflow the track and the page.
+      const scale = Math.max(0.02, pBase, pRain, pFull);
+      const clamp = x => Math.max(0, Math.min(100, x));
       let html = '';
       let acc = 0;
       for (const row of rows) {
-        const w = Math.abs(row.v) / scale * 100;
-        const left = row.name === 'baseline' ? 0 : (row.v >= 0 ? acc / scale * 100 : (acc + row.v) / scale * 100);
+        const leftRaw = row.name === 'baseline' ? 0 : (row.v >= 0 ? acc : acc + row.v) / scale * 100;
+        const left = clamp(leftRaw);
+        const width = clamp(Math.min(Math.abs(row.v) / scale * 100, 100 - left));
         html += `<div class="row"><span class="name">${row.name}</span>`
-             + `<span class="track"><span class="fill" style="left:${left.toFixed(1)}%;width:${w.toFixed(1)}%;background:${row.css}"></span></span>`
+             + `<span class="track"><span class="fill" style="left:${left.toFixed(1)}%;width:${width.toFixed(1)}%;background:${row.css}"></span></span>`
              + `<span class="pct">${row.v >= 0 ? '+' : '−'}${(100*Math.abs(row.v)).toFixed(1)}%</span></div>`;
         acc += row.v;
       }
