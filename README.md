@@ -72,13 +72,15 @@ grey Great Britain, coloured by `P(exceed)`, plus a rainfall→exceedance explor
 that decomposes a chosen site's forecast into baseline + rain + season pushes — all
 computed client-side from the fitted coefficients shipped in `data.js`.
 
-Regenerate the data (cached per site under `data/raw/`, so re-runs are fast and
-offline; only genuinely-new weekly samples hit the network):
+Regenerate it with the latest data and fitted predictions in one command (cached
+per site under `data/raw/`, so re-runs are fast and offline — only sites whose
+cache is stale, or genuinely-new weekly samples, hit the network):
 
 ```bash
-go run ./cmd/export-dashboard -all          # writes data.js; ~24s warm cache, 0 network
-open index.html
+make site          # regenerates data.js (~24s warm cache); then open index.html
 ```
+
+`make site-refresh` forces a full refetch; `make help` lists every target.
 
 ## Using it
 
