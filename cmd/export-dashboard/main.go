@@ -1,10 +1,11 @@
 // Command export-dashboard fits the rain+season model for a set of sites and
-// writes their coefficients, locations, and recent resolved samples to
-// dashboard/data.js as `window.FORECAST_DATA`. The static dashboard then computes
-// P(exceedance) client-side from these coefficients — the idea of shipping
-// the fitted model to the reader so the rainfall→exceedance explorer runs live.
+// writes their coefficients, locations, and recent resolved samples to data.js as
+// `window.FORECAST_DATA` (loaded by index.html at the repo root, for GitHub
+// Pages). The static dashboard then computes P(exceedance) client-side from these
+// coefficients — the idea of shipping the fitted model to the reader so the
+// rainfall→exceedance explorer runs live.
 //
-//	export-dashboard -all -limit 140 -out dashboard/data.js
+//	export-dashboard -all -out data.js
 package main
 
 import (
@@ -58,7 +59,7 @@ type dataOut struct {
 func main() {
 	pointsCSV := flag.String("points", "", "comma-separated points (default: -all)")
 	all := flag.Bool("all", true, "use every designated England site")
-	limit := flag.Int("limit", 140, "cap sites when -all")
+	limit := flag.Int("limit", 0, "cap sites when -all (0 = all)")
 	dist := flag.Float64("dist", 15, "rain-gauge search radius (km)")
 	window := flag.Int("window", 2, "antecedent rainfall window (days)")
 	threshold := flag.Float64("threshold", 500, "E. coli exceedance cut")
@@ -67,7 +68,7 @@ func main() {
 	cacheDir := flag.String("cache", "data/raw/sites", "directory for cached site pulls (\"\" disables)")
 	maxAge := flag.Duration("max-age", 7*24*time.Hour, "refetch a cached site once it is older than this (0 = never)")
 	refresh := flag.Bool("refresh", false, "ignore the cache and refetch every site")
-	out := flag.String("out", "dashboard/data.js", "output file")
+	out := flag.String("out", "data.js", "output file")
 	flag.Parse()
 	if *pointsCSV != "" {
 		*all = false

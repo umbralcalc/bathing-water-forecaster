@@ -66,18 +66,18 @@ from partly-censored data.
 
 ## Dashboard
 
-`dashboard/index.html` is a self-contained interactive page (styled for the blog):
-an SVG map of every designated site over a grey Great Britain, coloured by
-`P(exceed)`, plus a rainfall→exceedance explorer that decomposes a chosen site's
-forecast into baseline + rain + season pushes — all computed client-side from the
-fitted coefficients shipped in `dashboard/data.js`.
+`index.html` at the repo root is a self-contained interactive page (styled for the
+blog, served as-is by GitHub Pages): an SVG map of every designated site over a
+grey Great Britain, coloured by `P(exceed)`, plus a rainfall→exceedance explorer
+that decomposes a chosen site's forecast into baseline + rain + season pushes — all
+computed client-side from the fitted coefficients shipped in `data.js`.
 
 Regenerate the data (cached per site under `data/raw/`, so re-runs are fast and
 offline; only genuinely-new weekly samples hit the network):
 
 ```bash
-go run ./cmd/export-dashboard -all          # ~24s warm cache, 0 network calls
-open dashboard/index.html
+go run ./cmd/export-dashboard -all          # writes data.js; ~24s warm cache, 0 network
+open index.html
 ```
 
 ## Using it
@@ -118,7 +118,8 @@ internal/
   compose/           stochadex partition composition (incl. the OU anomaly)
   anomaly/           particle filter for the shared regional factor
   siteload/          site assembly + on-disk cache
-dashboard/           static interactive dashboard (index.html + generated data.js)
+index.html           static interactive dashboard (GitHub Pages entry point)
+data.js              generated site coefficients the dashboard loads
 data/
   raw/               cached pulls (gitignored)
   predictions/       committed forecasts (the proof-of-commit ledger)
