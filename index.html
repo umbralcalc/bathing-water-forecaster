@@ -180,7 +180,6 @@
 
     /* ---------- Dashboard-specific ---------- */
     :root { --blue: #3c78d8; --magenta: #b0447a; --ink: #1a1a1a; --slate: #2c3e50; --line: #e0e0e0; }
-    .subtitle { color: #777; font-size: 1.05rem; margin-top: .25rem; margin-bottom: 1.5rem; }
     .muted { color: #777; font-size: .9rem; }
 
     /* Controls */
@@ -228,7 +227,10 @@
     </nav>
 
     <main>
-    <h1>Bathing water exceedance forecast</h1>
+      <h1 id="bathing-water-exceedance-forecast">Bathing water exceedance forecast</h1>
+      <div style="height:0.75em;">
+
+      </div>
 
     <p>
       Each designated bathing water site is sampled for <em>E. coli</em> roughly weekly in
@@ -313,11 +315,17 @@
     </p>
 
     <p>
-      <strong>Data and license:</strong> Contains public sector information from the 
-      Environment Agency (Bathing Water Quality and Hydrology APIs) licensed under the 
-      Open Government Licence v3.0. Not affiliated with or endorsed by the Environment 
-      Agency, and not an official source of advice on bathing-water safety; for that, 
-      consult the EA's <a href="https://environment.data.gov.uk/bwq/profiles/">Swimfo</a> service.
+      <strong>Data and license:</strong> Contains public sector information from the
+      Environment Agency
+      (<a href="https://environment.data.gov.uk/">Bathing Water Quality and Hydrology APIs</a>)
+      licensed under the
+      <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">Open Government Licence v3.0</a>.
+      Not affiliated with or endorsed by the Environment Agency, and not an official
+      source of advice on bathing-water safety; for that, consult the EA's
+      <a href="https://environment.data.gov.uk/bwq/profiles/">Swimfo</a> service.
+    </p>
+
+    <p>
       <span id="genNote"></span>
     </p>
     </main>
