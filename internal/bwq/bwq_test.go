@@ -140,3 +140,42 @@ func TestCensoringString(t *testing.T) {
 		}
 	}
 }
+
+// TestParseSampleRepeatedProperties covers the ELDA shape that silently cost the
+// dashboard whole sites: a sample that carries more than one value for a nested
+// property serves it as an array of objects rather than one object, which a
+// plain struct decode rejects — failing the entire page, not just that field.
+func TestParseSampleRepeatedProperties(t *testing.T) {
+	const item = `{
+		"bwq_bathingWater": [{"eubwidNotation": "ukj2-1234", "name": "Somewhere"}],
+		"bwq_samplingPoint": [{"samplePointNotation": "16700"}],
+		"sampleDateTime": [{"inXSDDateTime": {"_value": "2025-07-15T09:30:00"}}],
+		"sampleWeek": [{"label": "British Week:2025-W29"}],
+		"escherichiaColiCount": {"_value": 120},
+		"escherichiaColiQualifier": [{"countQualifierNotation": "<"}]
+	}`
+
+	var r rawSample
+	if err := json.Unmarshal([]byte(item), &r); err != nil {
+		t.Fatalf("unmarshal item: %v", err)
+	}
+	s := r.toSample()
+	if s.SamplePoint != "16700" {
+		t.Errorf("samplePoint = %q, want 16700", s.SamplePoint)
+	}
+	if s.BathingWaterName != "Somewhere" {
+		t.Errorf("bathingWaterName = %q, want Somewhere", s.BathingWaterName)
+	}
+	if s.Week != "2025-W29" {
+		t.Errorf("week = %q, want 2025-W29", s.Week)
+	}
+	if want := time.Date(2025, 7, 15, 9, 30, 0, 0, s.Time.Location()); !s.Time.Equal(want) {
+		t.Errorf("time = %v, want %v", s.Time, want)
+	}
+	if !s.EColi.Present || s.EColi.Value != 120 {
+		t.Errorf("eColi = %+v, want present 120", s.EColi)
+	}
+	if s.EColi.Censoring != LessThan {
+		t.Errorf("censoring = %v, want LessThan", s.EColi.Censoring)
+	}
+}

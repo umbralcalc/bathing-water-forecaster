@@ -4,10 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/umbralcalc/bathing-water-forecaster/internal/httpx"
 )
 
 // DefaultBaseURL is the live EA linked-data API. Item lists are served under the
@@ -204,25 +205,9 @@ func (c *Client) paginate(ctx context.Context, path string, q url.Values, fn fun
 
 // getItems performs one request and returns its decoded item envelope.
 func (c *Client) getItems(ctx context.Context, path string, q url.Values) ([]json.RawMessage, error) {
-	u := c.BaseURL + path + "?" + q.Encode()
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
+	body, err := httpx.Get(ctx, c.HTTPClient, "bwq", c.BaseURL+path+"?"+q.Encode())
 	if err != nil {
 		return nil, err
-	}
-	req.Header.Set("Accept", "application/json")
-
-	resp, err := c.HTTPClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("bwq: GET %s: status %d: %s", u, resp.StatusCode, snippet(body))
 	}
 	return decodeItems(body)
 }
@@ -234,12 +219,4 @@ func decodeItems(body []byte) ([]json.RawMessage, error) {
 		return nil, fmt.Errorf("bwq: decoding envelope: %w", err)
 	}
 	return env.Result.Items, nil
-}
-
-func snippet(b []byte) string {
-	const n = 200
-	if len(b) > n {
-		return string(b[:n]) + "…"
-	}
-	return string(b)
 }

@@ -14,10 +14,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/umbralcalc/bathing-water-forecaster/internal/httpx"
 )
 
 // DefaultBaseURL is the live Hydrology API root.
@@ -138,25 +139,7 @@ func measurePath(measureID string) string {
 }
 
 func (c *Client) get(ctx context.Context, path string, q url.Values) ([]byte, error) {
-	u := c.BaseURL + path + "?" + q.Encode()
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("Accept", "application/json")
-	resp, err := c.HTTPClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("hydro: GET %s: status %d", u, resp.StatusCode)
-	}
-	return body, nil
+	return httpx.Get(ctx, c.HTTPClient, "hydro", c.BaseURL+path+"?"+q.Encode())
 }
 
 func trimFloat(f float64) string {

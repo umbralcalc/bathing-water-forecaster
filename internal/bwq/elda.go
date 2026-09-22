@@ -43,6 +43,32 @@ func (s *eldaString) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+// unmarshalFirst decodes an ELDA nested resource, which the schema implies is a
+// single object but which arrives as an array of them whenever the item carries
+// more than one value for the property (a republished qualifier, say). Taking
+// the first keeps one odd item from failing a whole page, matching eldaString.
+// dst must point at a method-free alias of the target type, or this recurses.
+func unmarshalFirst(b []byte, dst any) error {
+	if json.Unmarshal(b, dst) == nil {
+		return nil
+	}
+	var arr []json.RawMessage
+	if json.Unmarshal(b, &arr) == nil && len(arr) > 0 {
+		return unmarshalFirst(arr[0], dst)
+	}
+	return nil // unknown shape: leave the zero value rather than fail the page
+}
+
+// eldaLabelled is a resource reference carrying a human-readable label.
+type eldaLabelled struct {
+	Label eldaString `json:"label"`
+}
+
+func (l *eldaLabelled) UnmarshalJSON(b []byte) error {
+	type plain eldaLabelled
+	return unmarshalFirst(b, (*plain)(l))
+}
+
 // eldaBool decodes {"_value":"true","_datatype":"boolean"} as well as a bare
 // JSON boolean.
 type eldaBool bool
@@ -93,32 +119,56 @@ func (f *eldaFloat) UnmarshalJSON(b []byte) error {
 
 // rawSample mirrors the in-season sample item fields this package consumes.
 type rawSample struct {
-	About        eldaString `json:"_about"`
-	BathingWater struct {
-		About          eldaString `json:"_about"`
-		EUBWIDNotation eldaString `json:"eubwidNotation"`
-		Name           eldaString `json:"name"`
-	} `json:"bwq_bathingWater"`
-	SamplingPoint struct {
-		Notation eldaString `json:"samplePointNotation"`
-	} `json:"bwq_samplingPoint"`
-	SampleDateTime struct {
-		Inner struct {
-			Value eldaString `json:"_value"`
-		} `json:"inXSDDateTime"`
-	} `json:"sampleDateTime"`
-	SampleWeek struct {
-		Label eldaString `json:"label"`
-	} `json:"sampleWeek"`
-	EColiCount     eldaFloat    `json:"escherichiaColiCount"`
-	EColiQualifier rawQualifier `json:"escherichiaColiQualifier"`
-	EntCount       eldaFloat    `json:"intestinalEnterococciCount"`
-	EntQualifier   rawQualifier `json:"intestinalEnterococciQualifier"`
-	Discountable   eldaBool     `json:"discountable"`
+	About          eldaString      `json:"_about"`
+	BathingWater   rawBathingWater `json:"bwq_bathingWater"`
+	SamplingPoint  rawPoint        `json:"bwq_samplingPoint"`
+	SampleDateTime rawDateTime     `json:"sampleDateTime"`
+	SampleWeek     eldaLabelled    `json:"sampleWeek"`
+	EColiCount     eldaFloat       `json:"escherichiaColiCount"`
+	EColiQualifier rawQualifier    `json:"escherichiaColiQualifier"`
+	EntCount       eldaFloat       `json:"intestinalEnterococciCount"`
+	EntQualifier   rawQualifier    `json:"intestinalEnterococciQualifier"`
+	Discountable   eldaBool        `json:"discountable"`
+}
+
+type rawBathingWater struct {
+	About          eldaString `json:"_about"`
+	EUBWIDNotation eldaString `json:"eubwidNotation"`
+	Name           eldaString `json:"name"`
+}
+
+func (v *rawBathingWater) UnmarshalJSON(b []byte) error {
+	type plain rawBathingWater
+	return unmarshalFirst(b, (*plain)(v))
+}
+
+type rawPoint struct {
+	Notation eldaString `json:"samplePointNotation"`
+}
+
+func (v *rawPoint) UnmarshalJSON(b []byte) error {
+	type plain rawPoint
+	return unmarshalFirst(b, (*plain)(v))
+}
+
+type rawDateTime struct {
+	Inner struct {
+		Value eldaString `json:"_value"`
+	} `json:"inXSDDateTime"`
+}
+
+func (v *rawDateTime) UnmarshalJSON(b []byte) error {
+	type plain rawDateTime
+	return unmarshalFirst(b, (*plain)(v))
 }
 
 type rawQualifier struct {
 	Notation eldaString `json:"countQualifierNotation"`
+}
+
+func (v *rawQualifier) UnmarshalJSON(b []byte) error {
+	type plain rawQualifier
+	return unmarshalFirst(b, (*plain)(v))
 }
 
 func (q rawQualifier) censoring() Censoring {

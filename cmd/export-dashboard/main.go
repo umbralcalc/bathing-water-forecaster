@@ -9,6 +9,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"flag"
@@ -68,6 +69,7 @@ func main() {
 	cacheDir := flag.String("cache", "data/raw/sites", "directory for cached site pulls (\"\" disables)")
 	maxAge := flag.Duration("max-age", 7*24*time.Hour, "refetch a cached site once it is older than this (0 = never)")
 	refresh := flag.Bool("refresh", false, "ignore the cache and refetch every site")
+	minKeep := flag.Float64("min-keep", 0.9, "refuse to overwrite -out if the run exports less than this fraction of the sites already in it (0 disables)")
 	out := flag.String("out", "data.js", "output file")
 	flag.Parse()
 	if *pointsCSV != "" {
@@ -94,7 +96,7 @@ func main() {
 	// worker pool; results are collected on the main goroutine (no shared state).
 	jobs := make(chan bwq.SamplingPoint)
 	results := make(chan siteOut)
-	var hits, fresh int64
+	var hits, fresh, failed int64
 	var wg sync.WaitGroup
 	for w := 0; w < *workers; w++ {
 		wg.Add(1)
@@ -103,6 +105,8 @@ func main() {
 			for tgt := range jobs {
 				site, cached, err := siteload.LoadCached(ctx, bw, hy, tgt.Notation, tgt.Lat, tgt.Long, tgt.Name, *dist, *window, *cacheDir, *maxAge, *refresh)
 				if err != nil {
+					atomic.AddInt64(&failed, 1)
+					log.Printf("  skipping %s (%s): %v", tgt.Notation, tgt.Name, err)
 					continue
 				}
 				if cached {
@@ -134,6 +138,18 @@ func main() {
 	if len(data.Sites) == 0 {
 		log.Fatal("no sites exported")
 	}
+	if failed > 0 {
+		log.Printf("%d of %d site(s) could not be fetched", failed, len(targets))
+	}
+	// A throttled or half-offline run still produces a valid-looking data.js, just
+	// a much emptier one — and the dashboard then silently ships a map missing
+	// most of its locations. Compare against what is already published and stop
+	// rather than overwrite a fuller export with a worse one.
+	if prev, ok := publishedSiteCount(*out); ok && *minKeep > 0 && float64(len(data.Sites)) < *minKeep*float64(prev) {
+		log.Fatalf("refusing to overwrite %s: exported %d sites but it already holds %d "+
+			"(likely a throttled or failed run; rerun, or pass -min-keep 0 to overwrite anyway)",
+			*out, len(data.Sites), prev)
+	}
 	sort.Slice(data.Sites, func(i, j int) bool { return data.Sites[i].Name < data.Sites[j].Name })
 
 	blob, err := json.MarshalIndent(data, "", " ")
@@ -143,8 +159,8 @@ func main() {
 	if err := os.WriteFile(*out, []byte("window.FORECAST_DATA = "+string(blob)+";\n"), 0o644); err != nil {
 		log.Fatalf("write: %v", err)
 	}
-	fmt.Printf("wrote %d sites to %s (%d from cache, %d freshly fetched)\n",
-		len(data.Sites), *out, hits, fresh)
+	fmt.Printf("wrote %d sites to %s (%d from cache, %d freshly fetched, %d unavailable)\n",
+		len(data.Sites), *out, hits, fresh, failed)
 }
 
 // plausibleFit rejects degenerate fits — typically sites where nearly every
@@ -218,6 +234,27 @@ func exportSite(site forecast.Site, window int, threshold float64, recent int) (
 		Beta:  [4]float64{round4(fit.Beta[0]), round5(fit.Beta[1]), round4(fit.Beta[2]), round4(fit.Beta[3])},
 		Sigma: round4(fit.Sigma), N: len(obs), Sample: samples,
 	}, true
+}
+
+// publishedSiteCount reads the site count out of an existing data.js, which is
+// a `window.FORECAST_DATA = {...};` assignment rather than bare JSON.
+func publishedSiteCount(path string) (int, bool) {
+	b, err := os.ReadFile(path)
+	if err != nil {
+		return 0, false
+	}
+	i := bytes.IndexByte(b, '{')
+	j := bytes.LastIndexByte(b, '}')
+	if i < 0 || j <= i {
+		return 0, false
+	}
+	var prev struct {
+		Sites []json.RawMessage `json:"sites"`
+	}
+	if json.Unmarshal(b[i:j+1], &prev) != nil {
+		return 0, false
+	}
+	return len(prev.Sites), true
 }
 
 func round1(x float64) float64 { return math.Round(x*10) / 10 }
