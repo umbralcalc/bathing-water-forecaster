@@ -1,0 +1,44 @@
+[
+  {
+    "id": "umbralcalc_take_better_actions",
+    "type": "webpage",
+    "author": [
+      {
+        "family": "Hardwick",
+        "given": "Robert"
+      }
+    ],
+    "title": "<span class=\"nocase\">How can simulations help me take better actions?</span>",
+    "container-title": "<span class=\"nocase\">umbralcalculations</span>",
+    "issued": {
+      "date-parts": [
+        [
+          2026,
+          5
+        ]
+      ]
+    },
+    "URL": "https://umbralcalc.github.io/posts/how_can_simulations_help_me_take_better_actions.html"
+  },
+  {
+    "id": "umbralcalc_prediction_cannot",
+    "type": "webpage",
+    "author": [
+      {
+        "family": "Hardwick",
+        "given": "Robert"
+      }
+    ],
+    "title": "<span class=\"nocase\">What can a simulation do that a prediction cannot?</span>",
+    "container-title": "<span class=\"nocase\">umbralcalculations</span>",
+    "issued": {
+      "date-parts": [
+        [
+          2025,
+          11
+        ]
+      ]
+    },
+    "URL": "https://umbralcalc.github.io/posts/what_can_a_simulation_do_that_a_prediction_cannot.html"
+  }
+]

@@ -16,9 +16,9 @@ site-refresh: ## Like 'site' but ignore the cache and refetch every site (slow; 
 	go run ./cmd/export-dashboard -all -refresh -workers $(WORKERS) -limit $(LIMIT)
 	@echo "→ data.js fully refreshed; open index.html"
 
-refs: ## Re-render the References section of index.html from refs/references.bib (needs pandoc)
+refs: ## Re-render the References section of index.html from refs/references.bib and refs/blog-questions.json (needs pandoc)
 	@printf -- '---\nnocite: "@*"\n---\n' \
-		| pandoc --citeproc --bibliography=refs/references.bib -f markdown -t html > refs/.rendered.html
+		| pandoc --citeproc --bibliography=refs/references.bib --bibliography=refs/blog-questions.json -f markdown -t html > refs/.rendered.html
 	@awk 'FNR==NR {r = r $$0 "\n"; next} \
 		/<!-- refs:begin/ {print; printf "%s", r; skip=1; next} \
 		/<!-- refs:end -->/ {skip=0} !skip' refs/.rendered.html index.html > index.html.tmp
