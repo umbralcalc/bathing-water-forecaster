@@ -234,6 +234,60 @@
     .attrib .track { background: #eef1f5; height: 16px; position: relative; overflow: hidden; }
     .attrib .fill { position: absolute; top: 0; height: 100%; }
     .attrib .pct { text-align: right; font-variant-numeric: tabular-nums; color: #555; }
+
+    /* As on the blog's post pages: the reference jumped to from the text */
+    .csl-entry:target {
+      background: #fdf3f8;
+      box-shadow: -0.75rem 0 0 #fdf3f8, calc(-0.75rem - 3px) 0 0 #b0447a;
+    }
+
+    /* The questions this page builds on, shown above its title */
+    .root-eyebrow {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 0.85rem;
+      color: #888;
+      margin-bottom: 0.4rem;
+    }
+
+    .root-eyebrow a {
+      color: #3c78d8;
+      text-decoration: none;
+    }
+
+    .root-eyebrow a:hover { text-decoration: underline; }
+
+    /* Questions whose answers cite this one (from the blog's questions.json) */
+    .cited-by {
+      margin-top: 2rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    .cited-by-label {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #b0447a;
+      margin-bottom: 0.5rem;
+    }
+
+    .cited-by ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .cited-by li {
+      margin: 0.3rem 0;
+      font-size: 0.95rem;
+    }
+
+    .cited-by li::before {
+      content: '\2190\00a0';
+      color: #2c3e50;
+    }
   </style>
 </head>
 <body>
@@ -245,6 +299,7 @@
     </nav>
 
     <main>
+      <div class="root-eyebrow">Builds on: <a href="https://umbralcalc.github.io/posts/how_can_simulations_help_me_take_better_actions.html">How can simulations help me take better actions?</a></div>
       <h1 id="bathing-water-exceedance-forecast">What is the probability of bathing water pollution across England?</h1>
       <div style="height:0.75em;">
 
@@ -476,6 +531,11 @@ href="https://doi.org/10.1103/PhysRev.36.823">https://doi.org/10.1103/PhysRev.36
 </div>
 </div>
     <!-- refs:end -->
+
+    <section class="cited-by" id="cited-by" hidden>
+      <div class="cited-by-label">Questions whose answers cite this one</div>
+      <ul id="cited-by-list"></ul>
+    </section>
     </main>
 
     <footer class="footer-disclaimer">
@@ -484,6 +544,36 @@ href="https://doi.org/10.1103/PhysRev.36.823">https://doi.org/10.1103/PhysRev.36
       <p><strong>Disclaimer:</strong> The interactive dashboards are all for learning, not deciding! These dashboards are simulation toys, based on simplified models fitted on incomplete data. Use them to build intuition about real-world simulations; don't use them to make real-world decisions.</p>
     </footer>
   </div>
+
+  <script>
+    // List the blog questions whose answers cite this forecast, from the
+    // question graph the blog builds; hidden when there are none.
+    (function() {
+      const section = document.getElementById('cited-by');
+      const list = document.getElementById('cited-by-list');
+      fetch('https://umbralcalc.github.io/questions.json')
+        .then(response => response.json())
+        .then(graph => {
+          const bySlug = {};
+          graph.questions.forEach(q => { bySlug[q.slug] = q; });
+          const me = bySlug['bathing_water_forecaster'];
+          if (!me) return;
+          (me.cited_by || [])
+            .map(slug => bySlug[slug])
+            .filter(q => q && !q.draft)
+            .forEach(q => {
+              const item = document.createElement('li');
+              const link = document.createElement('a');
+              link.href = 'https://umbralcalc.github.io' + q.url;
+              link.textContent = q.title;
+              item.appendChild(link);
+              list.appendChild(item);
+            });
+          if (list.children.length > 0) section.hidden = false;
+        })
+        .catch(() => {});
+    })();
+  </script>
 
   <script src="data.js"></script>
   <script>
